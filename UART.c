@@ -17,27 +17,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include "Robottest.h"
+#include "UART.h"
 
 #define clkspd 14745600
 #define BAUD 115200
 #define UBBR clkspd/16/BAUD-1
 
-char data;
-char buffer;
-void USART_Transmit(char data);
 
-ISR(USART0_RX_vect)
-{
-	data = UDR0;
-	
-	USART_Transmit('[');
-	USART_Transmit(data);
-	USART_Transmit(']');
-	USART_Transmit('\n');
-}
 
-void USART_Init( unsigned int baud )
+
+void USART_Init( )
 {
 	/* Set baud rate */
 	UBRR0H = 0;
@@ -48,15 +37,15 @@ void USART_Init( unsigned int baud )
 	UCSR0C = 0b00000110;
 }
 
-void USART_Transmit(char data)
+void USART_Transmit(uint8_t uartdata)
 {
 	/* Wait for empty transmit buffer */
 	while (!(UCSR0A & (1<<UDRE0)));
 	/* Put data into buffer, sends the data */
-	UDR0 = data;
+	UDR0 = uartdata;
 }
 
-char USART_Receive( void )
+uint8_t USART_Receive( void )
 {
 	/* Wait for data to be received */
 	while (!(UCSR0A & (1<<RXC0)));
@@ -68,26 +57,4 @@ void Interrupt_Init()
 {
 	UCSR0B |= (1<<RXCIE0);
 	sei();
-}
-
-int main(void)
-{
-	DDRD = 0b11000010;
-	DDRA = 0xFF;
-	
-	Timer1_init();
-	USART_Init(UBBR);
-	Interrupt_Init();
-
-	while(1)
-	{
-		while(data == 'w')
-		{
-			Drive_forward(0.5);
-		}
-		while(data == 's')
-		{
-			Drive_backwards(0.5);
-		}
-	}
 }
