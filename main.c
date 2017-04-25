@@ -9,47 +9,75 @@
 #include <stdbool.h>
 #include "SPI_slave.h"
 #include "UART.h"
+#include "Movement.h"
 
 // Variables 
 uint8_t data = 0;
 uint8_t uartdata;
+uint8_t next_movement = 0;
+
+bool moving = false;
+bool auto_control = false;
 
 //SPI receive interrupt
 ISR(SPI_STC_vect)
 {
-	QueuePut(SPDR);
+	PORTA |= (1<<0);
+	uint8_t data_received;
+	data_received = SPDR;
+	Queue_Put(data_received);
+	USART_Transmit(data_received, 1);
+	SPDR = 'D';
+	PORTA &= ~(1<<0);
+	
 }
 
 //UART receive interrupt
+ISR(USART1_RX_vect)
+{
+	uartdata = UDR1;
+	Movement_Queue_Put(uartdata);
+}
+
 ISR(USART0_RX_vect)
 {
-	uartdata = UDR0;
-	
-	QueueGet(&data);
-	
-	USART_Transmit('[');
-	USART_Transmit(data);
-	USART_Transmit(']');
-	USART_Transmit('\n');
-	
-	if(SPDR == 0)
+	if (UDR0 == 'd')
 	{
-		SPDR = uartdata;
+		moving = false;
 	}
 }
 
 int main(void)
 {
+	DDRA = 0xFF;
 	DDRD = 0b00001010;
 	DDRB |= (1<<DDB1);
 	
     spi_init_slave();  //Initialize slave SPI
-	QueueInit();
+	Queue_Init();
+	Movement_Queue_Init();
+	UART_Queue_Init();
 	USART_Init();
 	Interrupt_Init();
     sei();
 	
     while(1)
     {
+		if (auto_control == false)
+		{
+			Movement_Queue_Get(&next_movement);
+			if(next_movement != 0)
+			{
+				USART_Transmit(next_movement, 0);
+				USART_Transmit(0x00, 0);
+			}
+		}
+		
+		if (moving == false && auto_control == true)
+		{
+			Movement_Queue_Get(&next_movement);
+			USART_Transmit(next_movement, 0);
+			moving = true;
+		}
     }
 }

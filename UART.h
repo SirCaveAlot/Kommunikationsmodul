@@ -13,10 +13,14 @@
 
 void USART_Init( );
 
-void USART_Transmit(uint8_t data);
+void USART_Transmit(uint8_t data, int port);
 
 void Interrupt_Init();
 
-uint8_t USART_Receive( void );
+void UART_Queue_Init(void);
+
+void UART_Queue_Put(uint8_t new);
+
+void UART_Queue_Get(uint8_t *old);
 
 #endif /* UART_H_ */

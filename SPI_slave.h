@@ -11,10 +11,10 @@
 
 void spi_init_slave ();
 
-void QueueInit();
+void Queue_Init();
 
-void QueuePut(uint8_t new);
+void Queue_Put(uint8_t new);
 
-void QueueGet(uint8_t *old);
+void Queue_Get(uint8_t *old);
 
 #endif /* SPI_SLAVE_H_ */

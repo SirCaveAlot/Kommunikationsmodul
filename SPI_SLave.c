@@ -6,16 +6,16 @@
 #include "SPI_slave.h"
 
 /* Queue structure */
-#define QUEUE_ELEMENTS 25
+#define QUEUE_ELEMENTS 100
 #define QUEUE_SIZE (QUEUE_ELEMENTS + 1)
 uint8_t Queue[QUEUE_SIZE];
-int QueueIn, QueueOut;
+int Queue_In, Queue_Out;
 
 void spi_init_slave ()
 {
   DDRB=(1<<DDB6);               //MISO as OUTPUT
   SPCR=(1<<SPIE)|(1<<SPE);       //Enable SPI && interrupt enable bit
-  SPDR=0;
+  SPDR='D';
 }
 
 
@@ -33,35 +33,35 @@ void spi_init_slave ()
  */
 
 
-void QueueInit(void)
+void Queue_Init(void)
 {
-    QueueIn = QueueOut = 0;
+    Queue_In = Queue_Out = 0;
 }
 
-void QueuePut(uint8_t new)
+void Queue_Put(uint8_t new)
 {
-    if(QueueIn == QueueOut && Queue[0] != 0)
+    if(Queue_In == Queue_Out && Queue[0] != 0)
     {
         return; /* Queue Full*/
     }
 
-    Queue[QueueIn] = new;
+    Queue[Queue_In] = new;
 
-    QueueIn = (QueueIn + 1) % QUEUE_SIZE;
+    Queue_In = (Queue_In + 1) % QUEUE_SIZE;
 
    // return 0; // No errors
 }
 
-void QueueGet(uint8_t *old)
+void Queue_Get(uint8_t *old)
 {
-    if(QueueIn == QueueOut && Queue[0] == 0)
+    if(Queue_In == Queue_Out && Queue[0] == 0)
     {
         return; /* Queue Empty - nothing to get*/
     }
 
-    *old = Queue[QueueOut];
+    *old = Queue[Queue_Out];
 	
-	Queue[QueueOut] = 0;
+	Queue[Queue_Out] = 0;
 
 	//int statement = QueueIn - QueueOut;
 /*
@@ -70,7 +70,7 @@ void QueueGet(uint8_t *old)
 		Queue[QueueOut + i] = Queue[QueueOut + i + 1];
 	}*/
 
-	QueueOut = (QueueOut + 1) % QUEUE_SIZE;
+	Queue_Out = (Queue_Out + 1) % QUEUE_SIZE;
 
     //return 0; // No errors
 }
