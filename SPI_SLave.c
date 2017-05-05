@@ -3,19 +3,21 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "SPI_slave.h"
 
 /* Queue structure */
-#define QUEUE_ELEMENTS 100
+#define QUEUE_ELEMENTS 12000
 #define QUEUE_SIZE (QUEUE_ELEMENTS + 1)
-uint8_t Queue[QUEUE_SIZE];
-int Queue_In, Queue_Out;
+volatile uint8_t Queue[QUEUE_SIZE];
+volatile int Queue_In, Queue_Out;
+volatile int queue_length = 0;
 
 void spi_init_slave ()
 {
   DDRB=(1<<DDB6);               //MISO as OUTPUT
-  SPCR=(1<<SPIE)|(1<<SPE);       //Enable SPI && interrupt enable bit
   SPDR='D';
+  SPCR=(1<<SPIE)|(1<<SPE);       //Enable SPI && interrupt enable bit
 }
 
 
@@ -40,37 +42,44 @@ void Queue_Init(void)
 
 void Queue_Put(uint8_t new)
 {
-    if(Queue_In == Queue_Out && Queue[0] != 0)
-    {
-        return; /* Queue Full*/
-    }
-
     Queue[Queue_In] = new;
+	
+	queue_length++;
 
     Queue_In = (Queue_In + 1) % QUEUE_SIZE;
-
-   // return 0; // No errors
 }
 
 void Queue_Get(uint8_t *old)
 {
-    if(Queue_In == Queue_Out && Queue[0] == 0)
-    {
-        return; /* Queue Empty - nothing to get*/
-    }
-
     *old = Queue[Queue_Out];
-	
-	Queue[Queue_Out] = 0;
 
-	//int statement = QueueIn - QueueOut;
-/*
-    for(int i = 0; i < statement; i++)
-	{
-		Queue[QueueOut + i] = Queue[QueueOut + i + 1];
-	}*/
+	queue_length--;
 
 	Queue_Out = (Queue_Out + 1) % QUEUE_SIZE;
+}
 
-    //return 0; // No errors
+bool Queue_full()
+{
+	return queue_length == 12000;
+}
+
+bool Queue_empty()
+{
+	return queue_length == 0;
+}
+
+bool Queue_contains(int i)
+{
+	return queue_length >= i;
+}
+
+uint8_t Queue_Peek(int i)
+{
+	int peek_value = (Queue_Out + i) % QUEUE_SIZE;
+	return Queue[peek_value];
+}
+
+void Queue_Remove()
+{
+	Queue_Out = (Queue_Out + 1) % QUEUE_SIZE;
 }

@@ -15,6 +15,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
 #include "UART.h"
@@ -24,10 +25,10 @@
 #define UBBR clkspd/16/BAUD-1
 
 /* Queue structure */
-#define UART_QUEUE_ELEMENTS 100
+#define UART_QUEUE_ELEMENTS 20
 #define UART_QUEUE_SIZE (UART_QUEUE_ELEMENTS + 1)
-uint8_t UART_Queue[UART_QUEUE_SIZE];
-int UART_Queue_In, UART_Queue_Out;
+volatile uint8_t UART_Queue[UART_QUEUE_SIZE];
+uint8_t UART_Queue_In, UART_Queue_Out;
 
 void USART_Init( )
 {
@@ -105,6 +106,7 @@ void UART_Queue_Get(uint8_t *old)
 {
     if(UART_Queue_In == UART_Queue_Out && UART_Queue[0] == 0)
     {
+		*old = 0;
         return; /* Queue Empty - nothing to get*/
     }
 

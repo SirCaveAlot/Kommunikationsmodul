@@ -5,6 +5,7 @@
  *  Author: jakpa844
  */ 
 
+#include <stdint.h>
 
 #ifndef MOVEMENT_H_
 #define MOVEMENT_H_
