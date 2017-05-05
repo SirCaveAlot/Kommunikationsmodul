@@ -41,7 +41,7 @@ int Get_tile(int xcoord, int ycoord, int m, int n, int a[m][n])
 	}
 }
 
-int Set_tile(int xcoord, int ycoord, int newTile, int m, int n, int a[m][n])
+int Set_tile(int xcoord, int ycoord, int newTile, int m, int n, uint8_t a[m][n])
 {
 	if((xcoord<0) || (ycoord<0) || (xcoord>29) || (ycoord>29))
 	{
@@ -619,7 +619,7 @@ int Match_tile_y(int x[],int y[])
 	return coord_y;
 }
 
-void Update_map(int x[],int y[], int m, int n, int a[m][n])
+void Update_map(int x[],int y[], int m, int n, uint8_t a[m][n])
 {
 	int x_tile_rob=Match_tile_x(x,y);
 	int y_tile_rob=Match_tile_y(x,y);

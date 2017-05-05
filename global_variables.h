@@ -5,6 +5,7 @@
  *  Author: andan879
  */ 
 
+#include <stdint.h>
 
 #ifndef GLOBAL_VARIABLES_H_
 #define GLOBAL_VARIABLES_H_
@@ -16,7 +17,7 @@ typedef struct coordinates {
 
 extern coordinates robot_pos;
 
-extern int map_array[28][29];
+extern uint8_t map_array[28][29];
 
 extern int window_size;
 

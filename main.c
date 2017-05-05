@@ -23,18 +23,14 @@ uint8_t next_movement = 0;
 uint8_t next_uart = 0;
 uint8_t next_data = 0;
 volatile char mode = 'D';
-volatile uint8_t LIDAR_array[12000];
-//volatile uint8_t angle_array[4000];
+volatile uint8_t distance_array[4000];
+volatile uint8_t angle_array[4000];																																																																																												 
 
-																																																																																													 
+volatile uint8_t distance_counter = 0;
+volatile uint8_t angle_counter = 0;
+volatile uint8_t data_counter = 0;
 
-volatile uint8_t LIDAR_counter = 0;
-volatile uint8_t laser_counter = 0;
-
-volatile int count1 = 1; //Counter for laser values, count1 = 1 means distance, = 2 means angle, = 3 means stop byte (0xFF)
-volatile int count2 = 0; //Counter for 16-bit values, count2 = 0 means zero bytes received, = 1 means one byte, and = 2 means two bytes been received, so increase count1 by one. 
-volatile int count3 = 0; //Counter for the amount of laser values. Increases for every distance or angle received. Waits for 8000 total bytes (4000 distances, 4000 angles). 
-int drive_count = 0;     //Counter for drive-mode, in which it only receives 10 values. After the 10th value we send the current mode to let the PC know if it changed. 
+volatile int drive_count = 0;     //Counter for drive-mode, in which it only receives 10 values. After the 10th value we send the current mode to let the PC know if it changed. 
 
 bool auto_control = false;
 volatile bool check_send = true;
@@ -44,9 +40,67 @@ ISR(SPI_STC_vect)
 {
 	volatile uint8_t data_received = SPDR;
 	PORTA = data_received;
-	if(!Queue_full())
+	
+	if(mode == 'D')
 	{
-		Queue_Put(data_received);
+		USART_Transmit(data_received, 1);
+		if (data_received == 0xFF && (drive_count == 0))
+		{
+			drive_count = 1;
+		}
+		if (drive_count >= 1)
+		{
+			if(drive_count == 11)
+			{
+				drive_count = 0;
+				USART_Transmit(mode, 1);
+			}
+			else
+			{
+				drive_count++;
+			}
+		}
+		
+	}
+	
+	else if(mode == 'L')
+	{
+		USART_Transmit(data_received, 1);
+		
+		if (distance_counter == 4000)
+		{
+			distance_counter = 0;
+		}
+		else if(angle_counter == 4000)
+		{
+			angle_counter = 0;
+		}
+		
+		if ((data_counter == 0 || data_counter == 1) && data_received == 0xFF)
+		{
+			data_counter++;
+		}
+		else if((data_counter == 0 || data_counter == 1) && data_received != 0xFF)
+		{
+			data_counter = 0;
+		}
+		else if(data_counter == 2 || data_counter == 3)
+		{
+			data_counter++;
+			distance_array[distance_counter] = data_received;
+			distance_counter++;
+		}
+		else if(data_counter == 4)
+		{
+			data_counter++;
+			angle_array[angle_counter] = data_received;
+			angle_counter++;
+		}
+		else
+		{
+			data_counter = 0;
+			angle_array[angle_counter] = data_received;
+		}
 	}
 	SPDR = mode;
 }
@@ -60,7 +114,6 @@ ISR(USART1_RX_vect)
 
 ISR(USART0_RX_vect)
 {
-
 }
 
 int main(void)
@@ -81,46 +134,21 @@ int main(void)
     {	
 		if(mode == 'S')
 		{
+			USART_Transmit(0xFF, 1);
 			for (int i = 0; i < 28; i++)
 			{
-				for ( int j = 0; j < 29; j++)
+				for (int j = 0; j < 29; j++)
 				{
 					USART_Transmit(map_array[i][j], 1);
 				}
 			}
+			drive_count = 0;
 			mode = 'D';
  		}
-		 
-		if(!Queue_empty())
-		{
-			if(mode == 'D')
-			{
-				Queue_Get(&next_data);
-				USART_Transmit(next_data, 1);
-				drive_count++;
-				if(drive_count == 11)
-				{
-					drive_count = 0;
-					USART_Transmit(mode, 1);
-				}
-			}
-			else if(mode == 'L')
-			{
-				USART_Transmit(next_data, 1);
-				LIDAR_array[LIDAR_counter] = next_data;
-				LIDAR_counter++;
-					
-				if(LIDAR_counter >= 11999)
-				{
-					mode = 'D';
-					LIDAR_counter = 0;
-				}
-			}
-		}
  		
-		Movement_Queue_Get(&next_movement);
-		if(next_movement != 0)
+		if (!Movement_queue_empty())
 		{
+			Movement_Queue_Get(&next_movement);
 			if(auto_control)
 			{
 				USART_Transmit(0, 0);
@@ -144,40 +172,47 @@ int main(void)
 			}
 		}
 		
-		UART_Queue_Get(&next_uart);
-		if(next_uart != 0)
+		if(!UART_queue_empty())
 		{
-			Movement_Queue_Put(next_uart);
+			UART_Queue_Get(&next_uart);
+			if(!Movement_queue_full())
+			{
+				Movement_Queue_Put(next_uart);
+			}
 			switch(next_uart)
 			{
 				case 'A':
 				auto_control = !auto_control;
-					
+				
 				break;
 				
 				case 'S':
-			
+				
 				mode = 'S';
-			
+				drive_count = 0;
+				
 				break;
-						
+				
 				case 'L':
-		
+				
 				mode = 'L';
-		
+				drive_count = 0;
+				
 				break;
-							
+				
 				case 'T':
-	
+				
 				mode = 'T';
-		
+				drive_count = 0;
+				
 				break;
-						
+				
 				default:
-	
+				
 				mode = 'D';
+				drive_count = 0;
 
-				break;	
+				break;
 			}
 		}
 	}

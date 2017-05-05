@@ -29,6 +29,7 @@
 #define UART_QUEUE_SIZE (UART_QUEUE_ELEMENTS + 1)
 volatile uint8_t UART_Queue[UART_QUEUE_SIZE];
 uint8_t UART_Queue_In, UART_Queue_Out;
+volatile int UART_queue_length = 0;
 
 void USART_Init( )
 {
@@ -90,31 +91,28 @@ void UART_Queue_Init(void)
 
 void UART_Queue_Put(uint8_t new)
 {
-    if(UART_Queue_In == UART_Queue_Out && UART_Queue[0] != 0)
-    {
-        return; /* Queue Full*/
-    }
-
     UART_Queue[UART_Queue_In] = new;
+	
+	UART_queue_length++;
 
     UART_Queue_In = (UART_Queue_In + 1) % UART_QUEUE_SIZE;
-
-   // return 0; // No errors
 }
 
 void UART_Queue_Get(uint8_t *old)
 {
-    if(UART_Queue_In == UART_Queue_Out && UART_Queue[0] == 0)
-    {
-		*old = 0;
-        return; /* Queue Empty - nothing to get*/
-    }
-
     *old = UART_Queue[UART_Queue_Out];
 	
-	UART_Queue[UART_Queue_Out] = 0;
+	UART_queue_length--;
 
 	UART_Queue_Out = (UART_Queue_Out + 1) % UART_QUEUE_SIZE;
+}
 
-    //return 0; // No errors
+bool UART_queue_full()
+{
+	return UART_queue_length == UART_QUEUE_ELEMENTS;
+}
+
+bool UART_queue_empty()
+{
+	return UART_queue_length == 0;
 }

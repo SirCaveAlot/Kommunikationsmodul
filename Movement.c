@@ -7,12 +7,14 @@
 
 #include <avr/io.h>
 #include "Movement.h"
+#include <stdbool.h>
 
 /* Queue structure */
 #define MOVEMENT_QUEUE_ELEMENTS 20
 #define MOVEMENT_QUEUE_SIZE (MOVEMENT_QUEUE_ELEMENTS + 1)
 volatile uint8_t Movement_Queue[MOVEMENT_QUEUE_SIZE];
 int Movement_Queue_In, Movement_Queue_Out;
+volatile int Movement_queue_length = 0;
 
 
 /* Very simple queue
@@ -34,33 +36,30 @@ void Movement_Queue_Init(void)
 
 void Movement_Queue_Put(uint8_t new)
 {
-    if(Movement_Queue_In == Movement_Queue_Out && Movement_Queue[0] != 0)
-    {
-        return; /* Queue Full*/
-    }
-
     Movement_Queue[Movement_Queue_In] = new;
 
-    Movement_Queue_In = (Movement_Queue_In + 1) % MOVEMENT_QUEUE_SIZE;
+	Movement_queue_length++;
 
-   // return 0; // No errors
+    Movement_Queue_In = (Movement_Queue_In + 1) % MOVEMENT_QUEUE_SIZE;
+}
+
+bool Movement_queue_full()
+{
+	return Movement_queue_length == MOVEMENT_QUEUE_ELEMENTS;
+}
+
+bool Movement_queue_empty()
+{
+	return Movement_queue_length == 0;
 }
 
 void Movement_Queue_Get(uint8_t *old)
 {
-    if(Movement_Queue_In == Movement_Queue_Out && Movement_Queue[0] == 0)
-    {
-        *old = 0;
-		return; /* Queue Empty - nothing to get*/
-    }
-
     *old = Movement_Queue[Movement_Queue_Out];
-	
-	Movement_Queue[Movement_Queue_Out] = 0;
+
+	Movement_queue_length--;
 
 	Movement_Queue_Out = (Movement_Queue_Out + 1) % MOVEMENT_QUEUE_SIZE;
-
-    //return 0; // No errors
 }
 
 

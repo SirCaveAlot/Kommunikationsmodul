@@ -7,11 +7,11 @@
 #include "SPI_slave.h"
 
 /* Queue structure */
-#define QUEUE_ELEMENTS 12000
-#define QUEUE_SIZE (QUEUE_ELEMENTS + 1)
-volatile uint8_t Queue[QUEUE_SIZE];
-volatile int Queue_In, Queue_Out;
-volatile int queue_length = 0;
+// #define QUEUE_ELEMENTS 12000
+// #define QUEUE_SIZE (QUEUE_ELEMENTS + 1)
+// volatile uint8_t Queue[QUEUE_SIZE];
+// volatile int Queue_In, Queue_Out;
+// volatile int queue_length = 0;
 
 void spi_init_slave ()
 {
@@ -34,52 +34,52 @@ void spi_init_slave ()
  * calls to QueuePut fail.
  */
 
-
-void Queue_Init(void)
-{
-    Queue_In = Queue_Out = 0;
-}
-
-void Queue_Put(uint8_t new)
-{
-    Queue[Queue_In] = new;
-	
-	queue_length++;
-
-    Queue_In = (Queue_In + 1) % QUEUE_SIZE;
-}
-
-void Queue_Get(uint8_t *old)
-{
-    *old = Queue[Queue_Out];
-
-	queue_length--;
-
-	Queue_Out = (Queue_Out + 1) % QUEUE_SIZE;
-}
-
-bool Queue_full()
-{
-	return queue_length == 12000;
-}
-
-bool Queue_empty()
-{
-	return queue_length == 0;
-}
-
-bool Queue_contains(int i)
-{
-	return queue_length >= i;
-}
-
-uint8_t Queue_Peek(int i)
-{
-	int peek_value = (Queue_Out + i) % QUEUE_SIZE;
-	return Queue[peek_value];
-}
-
-void Queue_Remove()
-{
-	Queue_Out = (Queue_Out + 1) % QUEUE_SIZE;
-}
+// 
+// void Queue_Init(void)
+// {
+//     Queue_In = Queue_Out = 0;
+// }
+// 
+// void Queue_Put(uint8_t new)
+// {
+//     Queue[Queue_In] = new;
+// 	
+// 	queue_length++;
+// 
+//     Queue_In = (Queue_In + 1) % QUEUE_SIZE;
+// }
+// 
+// void Queue_Get(uint8_t *old)
+// {
+//     *old = Queue[Queue_Out];
+// 
+// 	queue_length--;
+// 
+// 	Queue_Out = (Queue_Out + 1) % QUEUE_SIZE;
+// }
+// 
+// bool Queue_full()
+// {
+// 	return queue_length == 12000;
+// }
+// 
+// bool Queue_empty()
+// {
+// 	return queue_length == 0;
+// }
+// 
+// bool Queue_contains(int i)
+// {
+// 	return queue_length >= i;
+// }
+// 
+// uint8_t Queue_Peek(int i)
+// {
+// 	int peek_value = (Queue_Out + i) % QUEUE_SIZE;
+// 	return Queue[peek_value];
+// }
+// 
+// void Queue_Remove()
+// {
+// 	Queue_Out = (Queue_Out + 1) % QUEUE_SIZE;
+// }
