@@ -13,8 +13,8 @@
 #define MATCHTILE_H_
 
 
-int Get_tile(int xcoord, int ycoord, int m, int n, int a[m][n]);
-int Set_tile(int xcoord, int ycoord, int newTile, int m, int n, uint8_t a[m][n]);
+int Get_tile(int xcoord, int ycoord);
+int Set_tile(int xcoord, int ycoord, int newTile);
 int Convert_rob_loc_map_glob_x(int coordRobot);
 void init_const();
 int avg_array(int a[], int num_elements);
@@ -28,7 +28,7 @@ bool No_corner(int x[], int y[]);
 bool X_line(int x[], int y[]);
 int Match_tile_x(int x[],int y[]);
 int Match_tile_y(int x[],int y[]);
-void Update_map(int x[],int y[], int m, int n, uint8_t a[m][n]);
+void Update_map(int x[],int y[]);
 
 
 

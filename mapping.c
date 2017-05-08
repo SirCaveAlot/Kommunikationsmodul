@@ -21,6 +21,7 @@
 #define pi  3.14159
 #define val pi/180
 #define Marcus 360/1000
+#define marcus_to_radian pi/500
 
 //heloooooooooooooooooooooooooooooo
 
@@ -81,90 +82,88 @@ int array_y[20];
 void Test_values(){}
 */
 
-#define increase 90
-int size= 5;
-double rcv_radius[5]={28.28,24,20,24,35.28};
-double rcv_theta[5]={315,345,0,15,45};
+/*#define increase 90*/
+int size = 4000;
+// double rcv_radius[5] = {28.28,24,20,24,35.28};
+// double rcv_theta[5] = {315,345,0,15,45};
 
-double x_coordinates[5];
-double y_coordinates[5];
-int array_x[5];
-int array_y[5];
-void Test_values(){}
-	
-void DegreeToRadian(double array[]){
-	
-	for(int i= 0; i < size ; i++){
-		
-		array[i]= val*(90+ array[i]); 
-	}
-	
-} 
+// double x_coordinates[5];
+// double y_coordinates[5];
+int array_x[20];
+int array_y[20];
+
+// void DegreeToRadian(uint8_t array[])
+// {
+// 	for(int i = 0; i < size ; i + 1)
+// 	{
+// 		array[i] = marcus_to_radian * (array[i] + 250);
+// 	}
+// 	
+// } 
+
+// 
+// void PolarToCartesian(uint16_t radius_array[], uint16_t theta_array[])
+// {
+// 	for(int i = 0; i < size; i + 2)
+// 	{
+// 			 = (radius_array[i] << 8 | radius_array[i + 1]) * 
+// 							(cos(theta_array[i] << 8 | theta_array [i + 1]));
+// 			
+// 			 = (radius_array[i] << 8 | radius_array[i + 1]) * 
+// 							(sin(theta_array[i] << 8 | theta_array [i + 1]));
+// 	}
+// }
 
 
-void PolarToCartesian(double radius_array[], double theta_array[]){
-	int i=0;
-	while( i < size){
-			x_coordinates[i]= radius_array[i]*cos(theta_array[i]);	
-			
-			y_coordinates[i]= radius_array[i]*sin(theta_array[i]);
-			i++;
-	}
-}
-
-
-void RelativeToEffective (struct coordinates robot_position){	
-	
-	for(int i=0; i < size ; i++){
-		x_coordinates[i] = x_coordinates[i] + robot_position.x;
-		
-		y_coordinates[i] = y_coordinates[i] + robot_position.y;	
-		
-	}
-	
-}
+// void RelativeToEffective (struct coordinates robot_position)
+// {	
+// 	for(int i = 0; i < size ; i++)
+// 	{
+// 		x_coordinates[i] = x_coordinates[i] + robot_position.x;
+// 		
+// 		y_coordinates[i] = y_coordinates[i] + robot_position.y;	
+// 	}
+// }
 
 
 
 void Window ()
 {		
-		//Tar ut ett fönster på ett visst antal element och gör en vekotr av dem
-		
-	int volatile i=0;
-	int volatile index=0;
-	
+	//Tar ut ett fönster på ett visst antal element och gör en vekotr av dem
+	uint16_t vector_position = 0;
 	// Om det finns mindre plats än window_size, ta bar ett fönster de element som finns kvar
-	while(index + window_size < size +1){		
-		while(i < window_size){
-			
-			array_x[i]= (int) x_coordinates[index];		
-			array_y[i]= (int) y_coordinates[index];					
-			i++;
-			index++;
+	for(int index = 0; index < size + 1 - window_size; index++)
+	{
+		for(int i = 0; i < 2 * window_size; i++)
+		{   
+			vector_position = index + i;
+			if (i % 2 == 0)
+			{
+				array_x[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
+				(cos(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 29 * 1000 / 360) * marcus_to_radian + (pi / 2))) + robot_pos.x;
+				array_y[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
+				(sin(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 29 * 1000 / 360) * marcus_to_radian + (pi / 2))) + robot_pos.y;
+			}			
 		}
 		
-		Update_map(array_x, array_y,28,29,map_array);
-		i=0;
-		
+		Update_map(array_x, array_y);
 	}
-
 }
 
 
-void Cartesian_window (struct coordinates robot_position, double radius_array[],
- double theta_array[], int window_size, int size){
-	
-	DegreeToRadian(theta_array);
-	PolarToCartesian(radius_array, theta_array);
-	RelativeToEffective(robot_position);
-	Window();
- }
+// void Cartesian_window (uint8_t radius_array[], uint8_t theta_array[], int window_size, int size)
+//  {
+// 	//DegreeToRadian(theta_array);
+// 	//PolarToCartesian(radius_array, theta_array);
+// 	//RelativeToEffective(robot_position);
+// 	Window();
+//  }
 
 
-int testmapArrayTileGet1;
-int testmapArrayTileGet2;
-int testmapArrayTileGet3;
-int testmapArrayTileGet4;
+// int testmapArrayTileGet1;
+// int testmapArrayTileGet2;
+// int testmapArrayTileGet3;
+// int testmapArrayTileGet4;
 /*
 int testBestmatch_x;
 int testbest_match_y;

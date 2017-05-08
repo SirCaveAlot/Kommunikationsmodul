@@ -24,12 +24,12 @@ int groupArrayY[4]={301, 298, 296, 305};
 */
 
 
-int16_t max_avg_dist = 40;
+int16_t max_avg_dist = 10;
 int no_No_corners = SIZE_OF_ARRAY(line_array_x);
 int no_y_lines = SIZE_OF_ARRAY(line_array_y);
 
 
-int Get_tile(int xcoord, int ycoord, int m, int n, int a[m][n])
+int Get_tile(int xcoord, int ycoord)
 {
 	if((xcoord<0) || (ycoord<0) || (xcoord>29) || (ycoord>29))
 	{
@@ -37,19 +37,19 @@ int Get_tile(int xcoord, int ycoord, int m, int n, int a[m][n])
 	}
 	else
 	{
-		return a[ycoord][xcoord];
+		return map_array[ycoord][xcoord];
 	}
 }
 
-int Set_tile(int xcoord, int ycoord, int newTile, int m, int n, uint8_t a[m][n])
+int Set_tile(int xcoord, int ycoord, int newTile)
 {
-	if((xcoord<0) || (ycoord<0) || (xcoord>29) || (ycoord>29))
+	if((xcoord<0) || (ycoord < 0) || (xcoord>29) || (ycoord>29))
 	{
 		return 1111;
 	}
 	else
 	{
-		a[ycoord][xcoord]=newTile;
+		map_array[ycoord][xcoord] = newTile;
 	}
 	
 	return 0;
@@ -395,7 +395,7 @@ int Match_x_next(int a[], int dont_match)
 		for(unsigned int i=0; i<no_No_corners+1; ++i)
 		{
 			temp_x = line_array_x[i];
-			if((temp_min_x > abs(avg_point_group_x - temp_x)) & (temp_x!=dont_match))
+			if((temp_min_x > abs(avg_point_group_x - temp_x)) && (temp_x!=dont_match))
 			{
 				temp_min_x=abs(avg_point_group_x-temp_x);
 				bestmatch_x = temp_x;
@@ -426,7 +426,7 @@ int Match_y_next(int a[], int dont_match)
 		for(unsigned int i=0; i<no_y_lines+1; ++i)
 		{
 			temp_y = line_array_y[i];
-			if((temp_min_y > abs(avg_point_group_y - temp_y)) & (temp_y!=dont_match))
+			if((temp_min_y > abs(avg_point_group_y - temp_y)) && (temp_y!=dont_match))
 			{
 				temp_min_y=abs(avg_point_group_y-temp_y);
 				best_match_y = temp_y;
@@ -532,7 +532,7 @@ int Match_tile_x(int x[],int y[])
 	int next_best_match_x = Match_x_next(x,bestmatch_x);
 	int avg_best_x = (bestmatch_x+next_best_match_x)/2;
 	
-	if ((X_line(x,y)) & (No_corner(x,y)))
+	if ((X_line(x,y)) && (No_corner(x,y)))
 	{
 		//Put tile on the correct side of the detected line
 		if(robot_pos.x<bestmatch_x)
@@ -548,7 +548,7 @@ int Match_tile_x(int x[],int y[])
 			return 1; //Shouldn't happen #1
 		}
 	}
-	else if((!X_line(x,y)) & (No_corner(x,y)))
+	else if((!X_line(x,y)) && (No_corner(x,y)))
 	{
 		if(avg_best_x > bestmatch_x)
 		{
@@ -580,7 +580,7 @@ int Match_tile_y(int x[],int y[])
 	int next_best_match_y = Match_y_next(y,best_match_y);
 	int avg_best_y = (best_match_y+next_best_match_y)/2;
 	
-	if ((X_line(x,y)) & (No_corner(x,y)))
+	if ((X_line(x,y)) && (No_corner(x,y)))
 	{
 		//Put tile on the correct side of the detected line
 		if(avg_best_y > best_match_y)
@@ -596,7 +596,7 @@ int Match_tile_y(int x[],int y[])
 			return 2; //Shouldn't happen #2
 		}
 	}
-	else if((!X_line(x,y)) & (No_corner(x,y)))
+	else if((!X_line(x,y)) && (No_corner(x,y)))
 	{
 		if(robot_pos.y<best_match_y)
 		{
@@ -619,7 +619,7 @@ int Match_tile_y(int x[],int y[])
 	return coord_y;
 }
 
-void Update_map(int x[],int y[], int m, int n, uint8_t a[m][n])
+void Update_map(int x[],int y[])
 {
 	int x_tile_rob=Match_tile_x(x,y);
 	int y_tile_rob=Match_tile_y(x,y);
@@ -630,9 +630,9 @@ void Update_map(int x[],int y[], int m, int n, uint8_t a[m][n])
 		int y_tile_glob=Convert_rob_loc_map_glob_y(y_tile_rob);
 		
 		//Add +1 for each time the tile is detected
-		/*
-		int newVal=Get_tile(x_tile_glob,y_tile_glob,29,29,a) + 1;
-		*/
-		Set_tile(x_tile_glob,y_tile_glob,1,28,29,a);	
+		
+		int newVal=Get_tile(x_tile_glob,y_tile_glob) + 1;
+		
+		Set_tile(x_tile_glob, y_tile_glob, newVal);	
 	}
 }

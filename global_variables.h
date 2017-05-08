@@ -10,7 +10,11 @@
 #ifndef GLOBAL_VARIABLES_H_
 #define GLOBAL_VARIABLES_H_
 
-typedef struct coordinates {
+extern volatile uint8_t distance_array[4000];
+extern volatile uint8_t angle_array[4000];
+
+typedef struct coordinates 
+{
 	double x;
 	double y;
 }coordinates;
@@ -23,6 +27,5 @@ extern int window_size;
 
 extern int allowed_point_difference_XorY;
 extern int allowed_point_difference_Corner;
-
 
 #endif /* GLOBAL_VARIABLES_H_ */

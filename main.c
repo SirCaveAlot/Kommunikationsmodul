@@ -22,25 +22,24 @@ uint8_t data = 0;
 uint8_t next_movement = 0;
 uint8_t next_uart = 0;
 uint8_t next_data = 0;
-volatile char mode = 'D';
-volatile uint8_t distance_array[4000];
-volatile uint8_t angle_array[4000];																																																																																												 
+volatile char mode = 'D';																																																																																					 
 
-volatile uint8_t distance_counter = 0;
-volatile uint8_t angle_counter = 0;
+volatile int distance_counter = 0;
+volatile int angle_counter = 0;
 volatile uint8_t data_counter = 0;
+volatile uint8_t data_received;
 
 volatile int drive_count = 0;     //Counter for drive-mode, in which it only receives 10 values. After the 10th value we send the current mode to let the PC know if it changed. 
 
+bool pc_ready = false;
 bool auto_control = false;
 volatile bool check_send = true;
 
 //SPI receive interrupt
 ISR(SPI_STC_vect)
 {
-	volatile uint8_t data_received = SPDR;
-	PORTA = data_received;
-	
+	//PORTA = data_received;
+	data_received = SPDR;
 	if(mode == 'D')
 	{
 		USART_Transmit(data_received, 1);
@@ -50,7 +49,7 @@ ISR(SPI_STC_vect)
 		}
 		if (drive_count >= 1)
 		{
-			if(drive_count == 11)
+			if(drive_count == 12)
 			{
 				drive_count = 0;
 				USART_Transmit(mode, 1);
@@ -60,22 +59,11 @@ ISR(SPI_STC_vect)
 				drive_count++;
 			}
 		}
-		
 	}
 	
 	else if(mode == 'L')
-	{
-		USART_Transmit(data_received, 1);
-		
-		if (distance_counter == 4000)
-		{
-			distance_counter = 0;
-		}
-		else if(angle_counter == 4000)
-		{
-			angle_counter = 0;
-		}
-		
+	{	
+		USART_Transmit(data_received, 1);		
 		if ((data_counter == 0 || data_counter == 1) && data_received == 0xFF)
 		{
 			data_counter++;
@@ -100,6 +88,19 @@ ISR(SPI_STC_vect)
 		{
 			data_counter = 0;
 			angle_array[angle_counter] = data_received;
+			angle_counter++;
+			
+			if(angle_counter == 4000)
+			{
+				angle_counter = 0;
+				mode = 'S';
+			}
+			USART_Transmit(mode, 1);
+		}
+		
+		if (distance_counter == 4000)
+		{
+			distance_counter = 0;
 		}
 	}
 	SPDR = mode;
@@ -122,6 +123,9 @@ int main(void)
 	DDRD = 0b00001010;
 	DDRB |= (1<<DDB1);
 	
+	robot_pos.x = 0;
+	robot_pos.y = 0;
+	
     spi_init_slave();  //Initialize slave SPI
 //	Queue_Init();
 	Movement_Queue_Init();
@@ -134,6 +138,7 @@ int main(void)
     {	
 		if(mode == 'S')
 		{
+			Window();
 			USART_Transmit(0xFF, 1);
 			for (int i = 0; i < 28; i++)
 			{
@@ -175,7 +180,7 @@ int main(void)
 		if(!UART_queue_empty())
 		{
 			UART_Queue_Get(&next_uart);
-			if(!Movement_queue_full())
+			if(!Movement_queue_full() && next_uart != 'Y')
 			{
 				Movement_Queue_Put(next_uart);
 			}
@@ -205,6 +210,11 @@ int main(void)
 				mode = 'T';
 				drive_count = 0;
 				
+				break;
+				
+				case 'Y':
+				
+				pc_ready = true;
 				break;
 				
 				default:

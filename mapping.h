@@ -13,19 +13,17 @@
 #include "global_variables.h"
 
 //-------------------------- Test Fuction --------------------------------------
-
-void Andreas_func(double array1[], double array2[]);	
 	
-void DegreeToRadian(double array[]);
+//void DegreeToRadian(uint16_t array[]);
 
-void PolarToCartesian(double radius_array[], double theta_array[]);
+//void PolarToCartesian(uint16_t radius_array[], uint16_t theta_array[]);
 
-void RelativeToEffective (struct coordinates robot_position);
+//void RelativeToEffective (struct coordinates robot_position);
 
 void Window ();
 
-void Cartesian_window (struct coordinates robot_position, double radius_array[],
- double theta_array[], int window_size, int size);
+// void Cartesian_window (struct coordinates robot_position, uint16_t radius_array[],
+//  uint16_t theta_array[], int window_size, int size);
 
 
 
