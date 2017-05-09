@@ -132,7 +132,7 @@ void Window ()
 	//Tar ut ett fönster på ett visst antal element och gör en vekotr av dem
 	uint16_t vector_position = 0;
 	// Om det finns mindre plats än window_size, ta bar ett fönster de element som finns kvar
-	for(int index = 0; index < size + 1 - window_size; index++)
+	for(int index = 0; index < size + 1 - window_size; index = index + 4)
 	{
 		for(int i = 0; i < 2 * window_size; i++)
 		{   

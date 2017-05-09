@@ -93,9 +93,11 @@ ISR(SPI_STC_vect)
 			if(angle_counter == 4000)
 			{
 				angle_counter = 0;
+				USART_Transmit(0, 1);
+				USART_Transmit(0, 1);
+				USART_Transmit(0, 1);
 				mode = 'S';
 			}
-			USART_Transmit(mode, 1);
 		}
 		
 		if (distance_counter == 4000)
@@ -139,16 +141,23 @@ int main(void)
 		if(mode == 'S')
 		{
 			Window();
-			USART_Transmit(0xFF, 1);
-			for (int i = 0; i < 28; i++)
+			if(pc_ready)
 			{
-				for (int j = 0; j < 29; j++)
+// 				USART_Transmit(0xFF, 1);
+// 				USART_Transmit(0xFF, 1);
+// 				USART_Transmit(0xFF, 1);
+				for (int i = 0; i < 28; i++)
 				{
-					USART_Transmit(map_array[i][j], 1);
+					for (int j = 0; j < 29; j++)
+					{
+						USART_Transmit(map_array[i][j], 1);
+					}
 				}
+				drive_count = 0;
+				mode = 'D';
+				pc_ready = false;
 			}
-			drive_count = 0;
-			mode = 'D';
+		
  		}
  		
 		if (!Movement_queue_empty())
