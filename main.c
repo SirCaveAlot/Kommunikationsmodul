@@ -21,6 +21,7 @@
 uint8_t data = 0;
 uint8_t next_movement = 0;
 uint8_t next_uart = 0;
+uint8_t uart0_received = 0;
 uint8_t next_data = 0;
 volatile char mode = 'D';																																																																																					 
 
@@ -33,7 +34,7 @@ volatile int drive_count = 0;     //Counter for drive-mode, in which it only rec
 
 bool pc_ready = false;
 bool auto_control = false;
-volatile bool check_send = true;
+volatile bool running = false;
 
 //SPI receive interrupt
 ISR(SPI_STC_vect)
@@ -93,9 +94,10 @@ ISR(SPI_STC_vect)
 			if(angle_counter == 4000)
 			{
 				angle_counter = 0;
-				USART_Transmit(0, 1);
-				USART_Transmit(0, 1);
-				USART_Transmit(0, 1);
+				USART_Transmit('S', 0);
+				USART_Transmit('S', 1);
+				USART_Transmit('S', 1);
+				USART_Transmit('S', 1);
 				mode = 'S';
 			}
 		}
@@ -111,12 +113,20 @@ ISR(SPI_STC_vect)
 //UART receive interrupt
 ISR(USART1_RX_vect)
 {
-	volatile uint8_t uartdata = UDR1;
-	UART_Queue_Put(uartdata);
+	//volatile uint8_t uartdata = UDR1;
+	UART_Queue_Put(UDR1);
 }
 
 ISR(USART0_RX_vect)
 {
+	uart0_received = UDR0;
+	if (auto_control)
+	{
+		if (uart0_received == 'd')
+		{
+			running = false;
+		}
+	}
 }
 
 int main(void)
@@ -129,13 +139,12 @@ int main(void)
 	robot_pos.y = 0;
 	
     spi_init_slave();  //Initialize slave SPI
-//	Queue_Init();
 	Movement_Queue_Init();
 	UART_Queue_Init();
 	USART_Init();
 	Interrupt_Init();
     sei();
-	 
+	
     while(1)
     {	
 		if(mode == 'S')
@@ -143,9 +152,6 @@ int main(void)
 			Window();
 			if(pc_ready)
 			{
-// 				USART_Transmit(0xFF, 1);
-// 				USART_Transmit(0xFF, 1);
-// 				USART_Transmit(0xFF, 1);
 				for (int i = 0; i < 28; i++)
 				{
 					for (int j = 0; j < 29; j++)
@@ -162,21 +168,26 @@ int main(void)
  		
 		if (!Movement_queue_empty())
 		{
-			Movement_Queue_Get(&next_movement);
 			if(auto_control)
 			{
-				USART_Transmit(0, 0);
-				if(next_movement == 'A' || next_movement == 'L')
+				if (running == false)
 				{
-					USART_Transmit(next_movement, 0);
-					USART_Transmit(0, 0);
-				}
-				else
-				{
-					USART_Transmit(next_movement, 0);
 					Movement_Queue_Get(&next_movement);
-					USART_Transmit(next_movement, 0);
+					USART_Transmit(0, 0);
+					if(next_movement == 'A' || next_movement == 'L')
+					{
+						USART_Transmit(next_movement, 0);
+						USART_Transmit(0, 0);
+					} 
+					else
+					{
+						USART_Transmit(next_movement, 0);
+						Movement_Queue_Get(&next_movement);
+						USART_Transmit(next_movement, 0);
+						running = true;
+					}
 				}
+	
 			}
 			else
 			{
@@ -197,6 +208,14 @@ int main(void)
 			{
 				case 'A':
 				auto_control = !auto_control;
+				Movement_Queue_Put('f');
+				Movement_Queue_Put(3);
+				Movement_Queue_Put('r');
+				Movement_Queue_Put(90);
+				Movement_Queue_Put('l');
+				Movement_Queue_Put(90);
+				Movement_Queue_Put('b');
+				Movement_Queue_Put(3);
 				
 				break;
 				
@@ -224,6 +243,7 @@ int main(void)
 				case 'Y':
 				
 				pc_ready = true;
+			
 				break;
 				
 				default:
