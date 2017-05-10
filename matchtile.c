@@ -24,7 +24,7 @@ int groupArrayY[4]={301, 298, 296, 305};
 */
 
 
-int16_t max_avg_dist = 10;
+int16_t max_avg_dist = 20;
 int no_No_corners = SIZE_OF_ARRAY(line_array_x);
 int no_y_lines = SIZE_OF_ARRAY(line_array_y);
 

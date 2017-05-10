@@ -18,10 +18,121 @@
 #include <stdbool.h>
 
 
-#define pi  3.14159
-#define val pi/180
+#define val M_PI/180
 #define Marcus 360/1000
-#define marcus_to_radian pi/500
+#define marcus_to_radian M_PI/500
+
+#define WHEEL_DIAMETER 63.34
+#define WHEEL_CIRCUMFERENCE (WHEEL_DIAMETER * M_PI)
+#define WHEEL_SLICE (WHEEL_CIRCUMFERENCE/16)
+
+void Set_robot_position(double xpos, double ypos)
+{
+	robot_pos.x = xpos;
+	robot_pos.y = ypos; 
+}
+
+void Set_robot_angle_direction(double direction)
+{
+	if(direction==8)
+	{
+		robot_pos.angle = 0;
+	}
+	else if(direction==6)
+	{
+		robot_pos.angle = M_PI/2;
+	}
+	else if(direction==2)
+	{
+		robot_pos.angle = M_PI;
+	}
+	else if(direction==4)
+	{
+		robot_pos.angle = 3*M_PI/2;
+	}
+}
+
+uint8_t Get_robot_direction()
+{
+	uint8_t direction = 66;
+	
+	if(robot_pos.angle == 0)
+	{
+		direction = 8;
+	}
+	else if(robot_pos.angle == M_PI/2)
+	{
+		direction = 6;
+	}
+	else if(robot_pos.angle == M_PI)
+	{
+		direction = 2;
+	}
+	else if(robot_pos.angle == 3*M_PI/2)
+	{
+		direction = 4;
+	}
+	return direction;
+}
+
+uint16_t Wheelshifts_to_distance(uint8_t nr_of_wheel_shifts)
+{
+	return WHEEL_SLICE*nr_of_wheel_shifts;
+}
+
+void update_robot_position(uint8_t nr_of_wheel_shifts)
+{
+		
+	if(robot_pos.angle == 0)
+	{
+		robot_pos.y = robot_pos.y + Wheelshifts_to_distance(nr_of_wheel_shifts);
+	}
+	else if(robot_pos.angle == M_PI/2)
+	{
+		robot_pos.x = robot_pos.x + Wheelshifts_to_distance(nr_of_wheel_shifts);
+	}
+	else if(robot_pos.angle == M_PI)
+	{
+		robot_pos.y = robot_pos.y - Wheelshifts_to_distance(nr_of_wheel_shifts);
+	}
+	else if(robot_pos.angle == 3*M_PI/2)
+	{
+		robot_pos.x = robot_pos.x - Wheelshifts_to_distance(nr_of_wheel_shifts);
+	}
+}
+
+uint8_t Get_robot_tile_x()
+{
+	int x_tile_cm;
+	uint8_t x_tile_matrix = 255;
+	
+	for(int i=0; i < 29; i++)
+	{
+		if((robot_pos.x > line_array_x[i] ) && (robot_pos.x < line_array_x[i+1]))
+		{
+			x_tile_cm = (line_array_x[i] + line_array_x[i+1])/2;
+			x_tile_matrix = Convert_rob_loc_map_glob_x(x_tile_cm);	
+		}	
+	}
+	
+	return x_tile_matrix;
+}
+uint8_t Get_robot_tile_y()
+{
+	int y_tile_cm;
+	uint8_t y_tile_matrix = 255;
+	
+	for(int i=0; i < 28; i++)
+	{
+		if((robot_pos.y > line_array_y[i] ) && (robot_pos.y < line_array_y[i+1]))
+		{
+			y_tile_cm = (line_array_y[i] + line_array_y[i+1])/2;
+			y_tile_matrix = Convert_rob_loc_map_glob_y(y_tile_cm);
+		}
+	}
+	return y_tile_matrix;
+}
+
 
 //heloooooooooooooooooooooooooooooo
 
@@ -89,8 +200,8 @@ int size = 4000;
 
 // double x_coordinates[5];
 // double y_coordinates[5];
-int array_x[20];
-int array_y[20];
+int array_x[10];
+int array_y[10];
 
 // void DegreeToRadian(uint8_t array[])
 // {
@@ -132,7 +243,7 @@ void Window ()
 	//Tar ut ett fönster på ett visst antal element och gör en vekotr av dem
 	uint16_t vector_position = 0;
 	// Om det finns mindre plats än window_size, ta bar ett fönster de element som finns kvar
-	for(int index = 0; index < size + 1 - window_size; index = index + 4)
+	for(int index = 0; index < size + 1 - window_size; index = index + 2)
 	{
 		for(int i = 0; i < 2 * window_size; i++)
 		{   
@@ -140,9 +251,9 @@ void Window ()
 			if (i % 2 == 0)
 			{
 				array_x[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
-				(cos(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 29 * 1000 / 360) * marcus_to_radian + (pi / 2))) + robot_pos.x;
+				(cos(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * marcus_to_radian + (M_PI / 2) + (robot_pos.angle))) + robot_pos.x;
 				array_y[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
-				(sin(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 29 * 1000 / 360) * marcus_to_radian + (pi / 2))) + robot_pos.y;
+				(sin(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * marcus_to_radian + (M_PI / 2) + (robot_pos.angle))) + robot_pos.y;
 			}			
 		}
 		

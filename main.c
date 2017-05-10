@@ -24,6 +24,7 @@ uint8_t next_uart = 0;
 uint8_t uart0_received = 0;
 uint8_t next_data = 0;
 volatile char mode = 'D';																																																																																					 
+volatile uint8_t uart1_received = 0;
 
 volatile int distance_counter = 0;
 volatile int angle_counter = 0;
@@ -41,16 +42,46 @@ ISR(SPI_STC_vect)
 {
 	//PORTA = data_received;
 	data_received = SPDR;
+	
+	SPDR = mode;
+	
 	if(mode == 'D')
 	{
 		USART_Transmit(data_received, 1);
-		if (data_received == 0xFF && (drive_count == 0))
+		if (data_received == 0xFF && (drive_count == 0 || drive_count == 1))
 		{
-			drive_count = 1;
+			drive_count++;
 		}
-		if (drive_count >= 1)
+		else if(data_received != 0xFF && (drive_count == 0 || drive_count == 1))
 		{
-			if(drive_count == 12)
+			drive_count = 0;
+		}
+		else if (drive_count >= 2)
+		{
+			if(drive_count == 6)
+			{
+				distance_traveled = data_received;
+				data_received = Wheelshifts_to_distance(data_received);
+			}
+			else if(drive_count == 7)
+			{
+				distance_traveled = (distance_traveled + data_received) / 2;
+				if (running == true && last_movement == 'f')
+				{
+					update_robot_position(distance_traveled);
+				}
+				distance_traveled = 0;
+				data_received = Wheelshifts_to_distance(data_received);
+			}
+			if(drive_count == 8)
+			{
+				USART_Transmit(last_movement, 1);
+			}
+			if(drive_count == 9)
+			{
+				USART_Transmit(Get_robot_direction(), 1);
+			}
+			if(drive_count == 11)
 			{
 				drive_count = 0;
 				USART_Transmit(mode, 1);
@@ -62,7 +93,7 @@ ISR(SPI_STC_vect)
 		}
 	}
 	
-	else if(mode == 'L')
+	if(mode == 'L')
 	{	
 		USART_Transmit(data_received, 1);		
 		if ((data_counter == 0 || data_counter == 1) && data_received == 0xFF)
@@ -107,14 +138,69 @@ ISR(SPI_STC_vect)
 			distance_counter = 0;
 		}
 	}
-	SPDR = mode;
 }
 
 //UART receive interrupt
 ISR(USART1_RX_vect)
 {
-	//volatile uint8_t uartdata = UDR1;
-	UART_Queue_Put(UDR1);
+	uart1_received = UDR1;
+	//UART_Queue_Put(UDR1);
+	if(!Movement_queue_full() && uart1_received != 'Y')
+	{
+		Movement_Queue_Put(next_uart);
+	}
+	
+	switch(uart1_received)
+	{
+		case 'A':
+		auto_control = !auto_control;
+					// 				Movement_Queue_Put('f');
+					// 				Movement_Queue_Put(3);
+					// 				Movement_Queue_Put('r');
+					// 				Movement_Queue_Put(90);
+					// 				Movement_Queue_Put('l');
+					// 				Movement_Queue_Put(90);
+					// 				Movement_Queue_Put('b');
+					// 				Movement_Queue_Put(3);
+					
+		break;
+					
+		case 'S':
+					
+		mode = 'S';
+		drive_count = 0;
+					
+		break;
+					
+		case 'L':
+					
+		mode = 'L';
+		
+		drive_count = 0;
+					
+		break;
+					
+		case 'T':
+					
+		mode = 'T';
+		drive_count = 0;
+					
+		break;
+					
+		case 'Y':
+					
+		pc_ready = true;
+					
+		break;
+					
+		default:
+					
+		mode = 'D';
+		drive_count = 0;
+
+		break;
+	}
+
 }
 
 ISR(USART0_RX_vect)
@@ -137,6 +223,7 @@ int main(void)
 	
 	robot_pos.x = 0;
 	robot_pos.y = 0;
+	robot_pos.angle = 0;
 	
     spi_init_slave();  //Initialize slave SPI
 	Movement_Queue_Init();
@@ -181,6 +268,10 @@ int main(void)
 					} 
 					else
 					{
+						if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
+						{
+							last_movement = next_movement;
+						}
 						USART_Transmit(next_movement, 0);
 						Movement_Queue_Get(&next_movement);
 						USART_Transmit(next_movement, 0);
@@ -197,62 +288,62 @@ int main(void)
 			}
 		}
 		
-		if(!UART_queue_empty())
-		{
-			UART_Queue_Get(&next_uart);
-			if(!Movement_queue_full() && next_uart != 'Y')
-			{
-				Movement_Queue_Put(next_uart);
-			}
-			switch(next_uart)
-			{
-				case 'A':
-				auto_control = !auto_control;
-				Movement_Queue_Put('f');
-				Movement_Queue_Put(3);
-				Movement_Queue_Put('r');
-				Movement_Queue_Put(90);
-				Movement_Queue_Put('l');
-				Movement_Queue_Put(90);
-				Movement_Queue_Put('b');
-				Movement_Queue_Put(3);
-				
-				break;
-				
-				case 'S':
-				
-				mode = 'S';
-				drive_count = 0;
-				
-				break;
-				
-				case 'L':
-				
-				mode = 'L';
-				drive_count = 0;
-				
-				break;
-				
-				case 'T':
-				
-				mode = 'T';
-				drive_count = 0;
-				
-				break;
-				
-				case 'Y':
-				
-				pc_ready = true;
-			
-				break;
-				
-				default:
-				
-				mode = 'D';
-				drive_count = 0;
-
-				break;
-			}
-		}
+// 		if(!UART_queue_empty())
+// 		{
+// 			UART_Queue_Get(&next_uart);
+// 			if(!Movement_queue_full() && next_uart != 'Y')
+// 			{
+// 				Movement_Queue_Put(next_uart);
+// 			}
+// 			switch(next_uart)
+// 			{
+// 				case 'A':
+// 				auto_control = !auto_control;
+// // 				Movement_Queue_Put('f');
+// // 				Movement_Queue_Put(3);
+// // 				Movement_Queue_Put('r');
+// // 				Movement_Queue_Put(90);
+// // 				Movement_Queue_Put('l');
+// // 				Movement_Queue_Put(90);
+// // 				Movement_Queue_Put('b');
+// // 				Movement_Queue_Put(3);
+// 				
+// 				break;
+// 				
+// 				case 'S':
+// 				
+// 				mode = 'S';
+// 				drive_count = 0;
+// 				
+// 				break;
+// 				
+// 				case 'L':
+// 				
+// 				mode = 'L';
+// 				drive_count = 0;
+// 				
+// 				break;
+// 				
+// 				case 'T':
+// 				
+// 				mode = 'T';
+// 				drive_count = 0;
+// 				
+// 				break;
+// 				
+// 				case 'Y':
+// 				
+// 				pc_ready = true;
+// 			
+// 				break;
+// 				
+// 				default:
+// 				
+// 				mode = 'D';
+// 				drive_count = 0;
+// 
+// 				break;
+// 			}
+// 		}
 	}
 }

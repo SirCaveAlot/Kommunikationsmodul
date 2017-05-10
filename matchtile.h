@@ -12,10 +12,13 @@
 #ifndef MATCHTILE_H_
 #define MATCHTILE_H_
 
+int line_array_x[30];
+int line_array_y[29];
 
 int Get_tile(int xcoord, int ycoord);
 int Set_tile(int xcoord, int ycoord, int newTile);
 int Convert_rob_loc_map_glob_x(int coordRobot);
+int Convert_rob_loc_map_glob_y(int coordRobot);
 void init_const();
 int avg_array(int a[], int num_elements);
 int match_x(int a[]);

@@ -13,10 +13,14 @@
 extern volatile uint8_t distance_array[4000];
 extern volatile uint8_t angle_array[4000];
 
-typedef struct coordinates 
+extern volatile uint8_t distance_traveled;
+extern uint8_t last_movement;
+
+typedef struct coordinates
 {
 	double x;
 	double y;
+	double angle;
 }coordinates;
 
 extern coordinates robot_pos;
