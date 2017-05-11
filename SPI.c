@@ -156,9 +156,9 @@ void Dequeue_SPI_queue_D_mode()
 			
 			SPI_queue_get(&distance_traveled);
 			distance_traveled = Wheelshifts_to_distance(distance_traveled);
+			//USART_Transmit(distance_traveled, 1);
+			distance_traveled = (distance_traveled + Wheelshifts_to_distance(SPI_queue_peek(SPI_queue_out))) / 2;
 			USART_Transmit(distance_traveled, 1);
-			distance_traveled = (distance_traveled + SPI_queue_peek(SPI_queue_out)) / 2;
-			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
 			if (running == true && last_movement == 'f')
 			{

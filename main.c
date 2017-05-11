@@ -138,25 +138,41 @@ ISR(SPI_STC_vect)
 //UART receive interrupt
 ISR(USART1_RX_vect)
 {
-	cli();
 	uart1_received = UDR1;
-	//PORTA = uart1_received;
-	UART_Queue_Put(UDR1);
-	sei();
+	UART_Queue_Put(uart1_received);
 }
 
 ISR(USART0_RX_vect)
 {
 	uart0_received = UDR0;
+/*	PORTA = uart0_received;*/
 	if (auto_control)
 	{
 		if (uart0_received == 'd')
 		{
 			running = false;
+			
 		}
 	}
 }
-
+// gustav
+void Simulation()
+{
+	if(auto_control)
+	{
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('b');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(90);
+		Movement_Queue_Put('r');
+		Movement_Queue_Put(90);
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(1);
+	}
+}
+//
 int main(void)
 {
 	DDRA = 0xFF;
@@ -173,7 +189,7 @@ int main(void)
 	UART_Queue_Init();
 	USART_Init();
 	Interrupt_Init();
-    sei();
+	sei();
 	
     while(1)
     {	
@@ -194,46 +210,9 @@ int main(void)
 				pc_ready = false;
 			}
  		}
-		
-		if (!Movement_queue_empty())
-		{
-			if(auto_control)
-			{
-				if (running == false)
-				{
-					Movement_Queue_Get(&next_movement);
-					USART_Transmit(0, 0);
-					if(next_movement == 'A' || next_movement == 'L')
-					{
-						USART_Transmit(next_movement, 0);
-						USART_Transmit(0, 0);
-					} 
-					else
-					{
-						if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
-						{
-							last_movement = next_movement;
-						}
-						USART_Transmit(next_movement, 0);
-						Movement_Queue_Get(&next_movement);
-						USART_Transmit(next_movement, 0);
-						running = true;
-					}
-					PORTA = 0;
-				}
-			}
-			else
-			{
-				USART_Transmit(0, 0);
-				USART_Transmit(next_movement, 0);
-				USART_Transmit(0, 0);
-			}
-		}
-		
 		if(!UART_queue_empty())
 		{
 			UART_Queue_Get(&next_uart);
-			PORTA = next_uart;
 			if(!Movement_queue_full() && next_uart != 'Y')
 			{
 				Movement_Queue_Put(next_uart);
@@ -242,16 +221,44 @@ int main(void)
 			{
 				case 'A':
 				auto_control = !auto_control;
+				//Gustav
+				Simulation();
 // 				Movement_Queue_Put('f');
 // 				Movement_Queue_Put(3);
-// 				Movement_Queue_Put('r');
-// 				Movement_Queue_Put(90);
-// 				Movement_Queue_Put('l');
-// 				Movement_Queue_Put(90);
-// 				Movement_Queue_Put('b');
-// 				Movement_Queue_Put(3);
-				
+				//Gustav end
 				break;
+				
+				// Gustav start
+				
+				case 'f':
+				if(auto_control)
+				{
+					Movement_Queue_Put(3);
+				}
+				break;
+				
+				case 'b':
+				if(auto_control)
+				{
+					Movement_Queue_Put(3);
+				}
+				break;
+				
+				case 'r':
+				if(auto_control)
+				{
+					Movement_Queue_Put(90);
+				}
+				break;
+				
+				case 'l':
+				if(auto_control)
+				{
+					Movement_Queue_Put(90);
+				}
+				break;
+				
+				// Gustav end
 				
 				case 'S':
 				
@@ -277,7 +284,7 @@ int main(void)
 				case 'Y':
 				
 				pc_ready = true;
-			
+				
 				break;
 				
 				default:
@@ -288,6 +295,44 @@ int main(void)
 				break;
 			}
 		}
+		
+		if (!Movement_queue_empty())
+		{
+			if(auto_control)
+			{
+				if (running == false)
+				{
+					Movement_Queue_Get(&next_movement);
+					PORTA = next_movement;
+					USART_Transmit(0, 0);
+					if(next_movement == 'A' || next_movement == 'L')
+					{
+						USART_Transmit(next_movement, 0);
+						USART_Transmit(0, 0);
+					} 
+					else
+					{
+						if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
+						{
+							last_movement = next_movement;
+						}
+						USART_Transmit(next_movement, 0);
+						Movement_Queue_Get(&next_movement);
+						USART_Transmit(next_movement, 0);
+						running = true;
+					}
+				}
+			}
+			else
+			{
+				Movement_Queue_Get(&next_movement);
+				USART_Transmit(0, 0);
+				USART_Transmit(next_movement, 0);
+				PORTA = next_movement;
+				USART_Transmit(0, 0);
+			}
+		}
+		
 		if(mode == 'D')
 		{
 			Dequeue_SPI_queue_D_mode();
