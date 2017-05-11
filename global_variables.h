@@ -6,6 +6,7 @@
  */ 
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifndef GLOBAL_VARIABLES_H_
 #define GLOBAL_VARIABLES_H_
@@ -13,7 +14,19 @@
 extern volatile uint8_t distance_array[4000];
 extern volatile uint8_t angle_array[4000];
 
-extern volatile uint8_t distance_traveled;
+extern uint8_t mode;
+
+extern uint8_t left_IR;
+extern uint8_t right_IR;
+
+extern int distance_counter;
+extern int angle_counter;
+
+extern bool pc_ready;
+extern bool auto_control;
+extern bool running;
+
+extern uint8_t distance_traveled;
 extern uint8_t last_movement;
 
 typedef struct coordinates

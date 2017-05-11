@@ -13,7 +13,7 @@
 // volatile int Queue_In, Queue_Out;
 // volatile int queue_length = 0;
 
-void spi_init_slave ()
+void spi_init_slave()
 {
   DDRB=(1<<DDB6);               //MISO as OUTPUT
   SPDR='D';

@@ -9,7 +9,7 @@
 #ifndef SPI_SLAVE_H_
 #define SPI_SLAVE_H_
 
-void spi_init_slave ();
+void spi_init_slave();
 
 // void Queue_Init();
 // 

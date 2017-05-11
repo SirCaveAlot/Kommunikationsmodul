@@ -7,9 +7,20 @@
  
 #include "global_variables.h"
 #include <stdint.h>
+#include <stdbool.h>
 
-volatile uint8_t distance_traveled = 0;
+uint8_t mode = 'D';
+uint8_t left_IR = 0;
+uint8_t right_IR = 0;
+uint8_t distance_traveled = 0;
 uint8_t last_movement = 0;
+
+int distance_counter = 0;
+int angle_counter = 0;
+
+bool pc_ready = false;
+bool auto_control = false;
+bool running = false;
 
 coordinates robot_pos;
 
