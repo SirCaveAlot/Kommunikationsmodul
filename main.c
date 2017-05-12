@@ -17,6 +17,7 @@
 #include "mapping.h"
 #include "matchtile.h"
 #include "global_variables.h"
+#include "SearchAndFind.h"
 
 // Variables 
 uint8_t data = 0;
@@ -37,115 +38,9 @@ volatile int drive_count = 0;   //Counter for drive-mode, in which it only recei
 //SPI receive interrupt
 ISR(SPI_STC_vect)
 {
-	//PORTA = data_received;
 	data_received = SPDR;
 	SPDR = mode;
 	SPI_queue_put(data_received);
-	
-/*
-	if(mode == 'D')
-	{
-		USART_Transmit(data_received, 1);
-		if (data_received == 0xFF && (drive_count == 0 || drive_count == 1))
-		{
-			drive_count++;
-		}
-		else if(data_received != 0xFF && (drive_count == 0 || drive_count == 1))
-		{
-			drive_count = 0;
-		}
-		else if (drive_count >= 2)
-		{
-			if(drive_count == 3)
-			{
-				Right_side_detectable(data_received);
-			}
-			else if(drive_count == 4)
-			{
-				Left_side_detectable(data_received);
-			}
-			else if(drive_count == 6)
-			{
-				distance_traveled = data_received;
-				data_received = Wheelshifts_to_distance(data_received);
-			}
-			else if(drive_count == 7)
-			{
-				distance_traveled = (distance_traveled + data_received) / 2;
-				if (running == true && last_movement == 'f')
-				{
-					update_robot_position(distance_traveled);
-				}
-				distance_traveled = 0;
-				data_received = Wheelshifts_to_distance(data_received);
-			}
-			else if(drive_count == 8)
-			{
-				USART_Transmit(last_movement, 1);
-			}
-			else if(drive_count == 9)
-			{
-				USART_Transmit(Get_robot_direction(), 1);
-			}
-			else if(drive_count == 11)
-			{
-				drive_count = 0;
-				USART_Transmit(mode, 1);
-			}
-			else
-			{
-				drive_count++;
-			}
-		}
-	}
-	
-	if(mode == 'L')
-	{	
-		USART_Transmit(data_received, 1);		
-		if ((data_counter == 0 || data_counter == 1) && data_received == 0xFF)
-		{
-			data_counter++;
-		}
-		else if((data_counter == 0 || data_counter == 1) && data_received != 0xFF)
-		{
-			data_counter = 0;
-		}
-		else if(data_counter == 2 || data_counter == 3)
-		{
-			data_counter++;
-			distance_array[distance_counter] = data_received;
-			distance_counter++;
-		}
-		else if(data_counter == 4)
-		{
-			data_counter++;
-			angle_array[angle_counter] = data_received;
-			angle_counter++;
-		}
-		else
-		{
-			data_counter = 0;
-			angle_array[angle_counter] = data_received;
-			angle_counter++;
-			
-			if(angle_counter == 4000)
-			{
-				angle_counter = 0;
-				USART_Transmit('S', 0);
-				USART_Transmit('S', 1);
-				USART_Transmit('S', 1);
-				USART_Transmit('S', 1);
-				mode = 'S';
-			}
-		}
-		
-		if (distance_counter == 4000)
-		{
-			distance_counter = 0;
-		}
-	}
-*/
-
 }
 
 //UART receive interrupt
@@ -158,7 +53,6 @@ ISR(USART1_RX_vect)
 ISR(USART0_RX_vect)
 {
 	uart0_received = UDR0;
-/*	PORTA = uart0_received;*/
 	if (auto_control)
 	{
 		if (uart0_received == 'd')
@@ -173,16 +67,23 @@ void Simulation()
 {
 	if(auto_control)
 	{
+		Movement_Queue_Put('L');
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(3);
-		Movement_Queue_Put('b');
-		Movement_Queue_Put(3);
-		Movement_Queue_Put('l');
-		Movement_Queue_Put(90);
+		Movement_Queue_Put('L');
 		Movement_Queue_Put('r');
 		Movement_Queue_Put(90);
 		Movement_Queue_Put('f');
-		Movement_Queue_Put(1);
+		Movement_Queue_Put(2);,
+		
+// 		Movement_Queue_Put('b');
+// 		Movement_Queue_Put(3);
+// 		Movement_Queue_Put('l');
+// 		Movement_Queue_Put(90);
+// 		Movement_Queue_Put('r');
+// 		Movement_Queue_Put(90);
+// 		Movement_Queue_Put('f');
+// 		Movement_Queue_Put(1);
 	}
 }
 //
@@ -311,16 +212,21 @@ int main(void)
 			}
 		}
 		
-		if (!Movement_queue_empty())
+		if (!Movement_queue_empty() && mode == 'D')
 		{
 			if(auto_control)
 			{
 				if (running == false)
 				{
 					Movement_Queue_Get(&next_movement);
-					//PORTA = next_movement;
+					
+					if(next_movement == 'L')
+					{
+						mode_changed = true;
+						running = true;
+					}
 					USART_Transmit(0, 0);
-					if(next_movement == 'A' || next_movement == 'L' || next_movement == 's')
+					if(next_movement == 'A' || next_movement == 'L' || next_movement == 's' || next_movement == 'S')
 					{
 						USART_Transmit(next_movement, 0);
 						USART_Transmit(0, 0);
@@ -330,6 +236,18 @@ int main(void)
 						if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
 						{
 							last_movement = next_movement;
+							if (next_movement == 'r')
+							{
+								robot_turn_right();
+							}
+							else if(next_movement == 'l')
+							{
+								robot_turn_left();
+							}
+							else if(next_movement == 'b')
+							{
+								robot_turn_around();
+							}
 						}
 						USART_Transmit(next_movement, 0);
 						Movement_Queue_Get(&next_movement);

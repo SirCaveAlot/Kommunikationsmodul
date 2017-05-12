@@ -35,7 +35,7 @@ void Set_robot_position(double xpos, double ypos)
 	robot_pos.y = ypos; 
 }
 
-void Set_robot_angle_direction(double direction)
+void Set_robot_angle_direction(uint8_t direction)
 {
 	if(direction==8)
 	{

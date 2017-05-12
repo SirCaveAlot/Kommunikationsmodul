@@ -24,6 +24,7 @@
 #include "mapping.h"
 #include "global_variables.h"
 #include "UART.h"
+#include "Movement.h"
 
 
 /* Queue structure */
@@ -146,8 +147,10 @@ void Dequeue_SPI_queue_D_mode()
 			
 			SPI_queue_get(&right_IR);
 			USART_Transmit(right_IR, 1);
+			Right_side_detectable(right_IR);
 			SPI_queue_get(&left_IR);
 			USART_Transmit(left_IR, 1);
+			Left_side_detectable(left_IR);
 			
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
@@ -178,6 +181,11 @@ void Dequeue_SPI_queue_D_mode()
 			
 			USART_Transmit(last_movement, 1);
 			USART_Transmit(Get_robot_direction(), 1);
+			if(mode_changed)
+			{
+				mode = 'L';
+				mode_changed = false;
+			}
 			USART_Transmit(mode, 1);
 			
 			dequeue = false;
@@ -251,16 +259,18 @@ void Dequeue_SPI_queue_L_mode()
 		angle_counter++;
 		SPI_queue_remove();
 		
-		PORTA = angle_counter;
-		
-		if(angle_counter >= 4000)
+		if(angle_counter == 4000)
 		{
-			angle_counter = 0;
-			USART_Transmit('S', 0);
-			USART_Transmit('S', 1);
-			USART_Transmit('S', 1);
-			USART_Transmit('S', 1);
+			PORTA &= (1<<0);
 			mode = 'S';
+			angle_counter = 0;
+			running = false;
+// 			USART_Transmit(0, 0);
+// 			USART_Transmit('S', 0);
+// 			USART_Transmit(0, 0);
+			USART_Transmit('S', 1);
+			USART_Transmit('S', 1);
+			USART_Transmit('S', 1);
 		}
 		dequeue_L = false;
 	}

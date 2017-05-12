@@ -5,13 +5,12 @@
  *  Author: andan879
  */ 
 
-
 #ifndef MAPPING_H_
 #define MAPPING_H_
 
 void Window ();
 void Set_robot_position(double xpos, double ypos);
-void Set_robot_angle_direction(double direction);
+void Set_robot_angle_direction(uint8_t direction);
 uint8_t Get_robot_direction();
 uint8_t Wheelshifts_to_distance(uint8_t nr_of_wheel_shifts);
 void update_robot_position(uint8_t nr_of_wheel_shifts);

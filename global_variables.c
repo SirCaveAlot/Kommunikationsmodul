@@ -8,7 +8,7 @@
 #include <avr/io.h>
 #include <stdint.h>
 #include <stdbool.h>
-
+#include "global_variables.h"
 
 
 uint8_t mode = 'D';
@@ -24,6 +24,7 @@ int angle_counter = 0;
 bool pc_ready = false;
 bool auto_control = false;
 bool running = false;
+bool mode_changed = false;
 
 coordinates robot_pos;
 

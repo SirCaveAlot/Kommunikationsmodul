@@ -25,6 +25,7 @@ extern int angle_counter;
 extern bool pc_ready;
 extern bool auto_control;
 extern bool running;
+extern bool mode_changed;
 
 extern uint8_t distance_traveled;
 extern uint8_t last_movement;
