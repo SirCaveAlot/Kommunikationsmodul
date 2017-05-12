@@ -9,7 +9,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+
 #include "SPI.h"
+
 #include "UART.h"
 #include "Movement.h"
 #include "mapping.h"
@@ -40,100 +42,111 @@ ISR(SPI_STC_vect)
 	SPDR = mode;
 	SPI_queue_put(data_received);
 	
+/*
+	if(mode == 'D')
+	{
+		USART_Transmit(data_received, 1);
+		if (data_received == 0xFF && (drive_count == 0 || drive_count == 1))
+		{
+			drive_count++;
+		}
+		else if(data_received != 0xFF && (drive_count == 0 || drive_count == 1))
+		{
+			drive_count = 0;
+		}
+		else if (drive_count >= 2)
+		{
+			if(drive_count == 3)
+			{
+				Right_side_detectable(data_received);
+			}
+			else if(drive_count == 4)
+			{
+				Left_side_detectable(data_received);
+			}
+			else if(drive_count == 6)
+			{
+				distance_traveled = data_received;
+				data_received = Wheelshifts_to_distance(data_received);
+			}
+			else if(drive_count == 7)
+			{
+				distance_traveled = (distance_traveled + data_received) / 2;
+				if (running == true && last_movement == 'f')
+				{
+					update_robot_position(distance_traveled);
+				}
+				distance_traveled = 0;
+				data_received = Wheelshifts_to_distance(data_received);
+			}
+			else if(drive_count == 8)
+			{
+				USART_Transmit(last_movement, 1);
+			}
+			else if(drive_count == 9)
+			{
+				USART_Transmit(Get_robot_direction(), 1);
+			}
+			else if(drive_count == 11)
+			{
+				drive_count = 0;
+				USART_Transmit(mode, 1);
+			}
+			else
+			{
+				drive_count++;
+			}
+		}
+	}
+	
+	if(mode == 'L')
+	{	
+		USART_Transmit(data_received, 1);		
+		if ((data_counter == 0 || data_counter == 1) && data_received == 0xFF)
+		{
+			data_counter++;
+		}
+		else if((data_counter == 0 || data_counter == 1) && data_received != 0xFF)
+		{
+			data_counter = 0;
+		}
+		else if(data_counter == 2 || data_counter == 3)
+		{
+			data_counter++;
+			distance_array[distance_counter] = data_received;
+			distance_counter++;
+		}
+		else if(data_counter == 4)
+		{
+			data_counter++;
+			angle_array[angle_counter] = data_received;
+			angle_counter++;
+		}
+		else
+		{
+			data_counter = 0;
+			angle_array[angle_counter] = data_received;
+			angle_counter++;
+			
+			if(angle_counter == 4000)
+			{
+				angle_counter = 0;
+				USART_Transmit('S', 0);
+				USART_Transmit('S', 1);
+				USART_Transmit('S', 1);
+				USART_Transmit('S', 1);
+				mode = 'S';
+			}
+		}
+		
+		if (distance_counter == 4000)
+		{
+			distance_counter = 0;
+		}
+	}
+*/
+
 }
-// 	if(mode == 'D')
-// 	{
-// 		USART_Transmit(data_received, 1);
-// 		if (data_received == 0xFF && (drive_count == 0 || drive_count == 1))
-// 		{
-// 			drive_count++;
-// 		}
-// 		else if(data_received != 0xFF && (drive_count == 0 || drive_count == 1))
-// 		{
-// 			drive_count = 0;
-// 		}
-// 		else if (drive_count >= 2)
-// 		{
-// 			if(drive_count == 6)
-// 			{
-// 				distance_traveled = data_received;
-// 				data_received = Wheelshifts_to_distance(data_received);
-// 			}
-// 			else if(drive_count == 7)
-// 			{
-// 				distance_traveled = (distance_traveled + data_received) / 2;
-// 				if (running == true && last_movement == 'f')
-// 				{
-// 					update_robot_position(distance_traveled);
-// 				}
-// 				distance_traveled = 0;
-// 				data_received = Wheelshifts_to_distance(data_received);
-// 			}
-// 			if(drive_count == 8)
-// 			{
-// 				USART_Transmit(last_movement, 1);
-// 			}
-// 			if(drive_count == 9)
-// 			{
-// 				USART_Transmit(Get_robot_direction(), 1);
-// 			}
-// 			if(drive_count == 11)
-// 			{
-// 				drive_count = 0;
-// 				USART_Transmit(mode, 1);
-// 			}
-// 			else
-// 			{
-// 				drive_count++;
-// 			}
-// 		}
-// 	}
-// 	
-// 	if(mode == 'L')
-// 	{	
-// 		USART_Transmit(data_received, 1);		
-// 		if ((data_counter == 0 || data_counter == 1) && data_received == 0xFF)
-// 		{
-// 			data_counter++;
-// 		}
-// 		else if((data_counter == 0 || data_counter == 1) && data_received != 0xFF)
-// 		{
-// 			data_counter = 0;
-// 		}
-// 		else if(data_counter == 2 || data_counter == 3)
-// 		{
-// 			data_counter++;
-// 			distance_array[distance_counter] = data_received;
-// 			distance_counter++;
-// 		}
-// 		else if(data_counter == 4)
-// 		{
-// 			data_counter++;
-// 			angle_array[angle_counter] = data_received;
-// 			angle_counter++;
-// 		}
-// 		else
-// 		{
-// 			data_counter = 0;
-// 			angle_array[angle_counter] = data_received;
-// 			angle_counter++;
-// 			
-// 			if(angle_counter == 4000)
-// 			{
-// 				angle_counter = 0;
-// 				USART_Transmit('S', 0);
-// 				USART_Transmit('S', 1);
-// 				USART_Transmit('S', 1);
-// 				USART_Transmit('S', 1);
-// 				mode = 'S';
-// 			}
-// 		}
-// 		
-// 		if (distance_counter == 4000)
-// 		{
-// 			distance_counter = 0;
-// 		}
-// 	}
 
 //UART receive interrupt
 ISR(USART1_RX_vect)
