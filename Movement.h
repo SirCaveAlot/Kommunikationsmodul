@@ -11,6 +11,9 @@
 #ifndef MOVEMENT_H_
 #define MOVEMENT_H_
 
+extern int Movement_Queue_In;
+extern int Movement_Queue_Out;
+extern int Movement_queue_length;
 
 void Movement_Queue_Init(void);
 

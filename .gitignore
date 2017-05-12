@@ -216,5 +216,9 @@ pip-log.txt
 .mr.developer.cfg
 
 
+
+
+*.cproj
+
 Debug/
 *.atsuo

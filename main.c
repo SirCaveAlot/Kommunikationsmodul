@@ -10,42 +10,39 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "SPI_slave.h"
+#include "SPI.h"
+
 #include "UART.h"
 #include "Movement.h"
 #include "mapping.h"
 #include "matchtile.h"
 #include "global_variables.h"
-//#include <stdint-gcc.h>
 
 // Variables 
 uint8_t data = 0;
 uint8_t next_movement = 0;
 uint8_t next_uart = 0;
 uint8_t uart0_received = 0;
-uint8_t next_data = 0;
-volatile char mode = 'D';																																																																																					 
+uint8_t next_data = 0;																																																																																	 
 volatile uint8_t uart1_received = 0;
 
-volatile int distance_counter = 0;
-volatile int angle_counter = 0;
+
 volatile uint8_t data_counter = 0;
 volatile uint8_t data_received;
 
-volatile int drive_count = 0;     //Counter for drive-mode, in which it only receives 10 values. After the 10th value we send the current mode to let the PC know if it changed. 
+volatile int drive_count = 0;   //Counter for drive-mode, in which it only receives 10 values. After the 10th value we send the current mode to let the PC know if it changed. 
 
-bool pc_ready = false;
-bool auto_control = false;
-volatile bool running = false;
+
 
 //SPI receive interrupt
 ISR(SPI_STC_vect)
 {
 	//PORTA = data_received;
 	data_received = SPDR;
-	
 	SPDR = mode;
+	SPI_queue_put(data_received);
 	
+/*
 	if(mode == 'D')
 	{
 		USART_Transmit(data_received, 1);
@@ -147,83 +144,48 @@ ISR(SPI_STC_vect)
 			distance_counter = 0;
 		}
 	}
+*/
+
 }
 
 //UART receive interrupt
 ISR(USART1_RX_vect)
 {
 	uart1_received = UDR1;
-	//UART_Queue_Put(UDR1);
-	if(!Movement_queue_full() && uart1_received != 'Y')
-	{
-		Movement_Queue_Put(next_uart);
-	}
-	
-	switch(uart1_received)
-	{
-		case 'A':
-		auto_control = !auto_control;
-					// 				Movement_Queue_Put('f');
-					// 				Movement_Queue_Put(3);
-					// 				Movement_Queue_Put('r');
-					// 				Movement_Queue_Put(90);
-					// 				Movement_Queue_Put('l');
-					// 				Movement_Queue_Put(90);
-					// 				Movement_Queue_Put('b');
-					// 				Movement_Queue_Put(3);
-					
-		break;
-					
-		case 'S':
-					
-		mode = 'S';
-		drive_count = 0;
-					
-		break;
-					
-		case 'L':
-					
-		mode = 'L';
-		
-		drive_count = 0;
-					
-		break;
-					
-		case 'T':
-					
-		mode = 'T';
-		drive_count = 0;
-					
-		break;
-					
-		case 'Y':
-					
-		pc_ready = true;
-					
-		break;
-					
-		default:
-					
-		mode = 'D';
-		drive_count = 0;
-
-		break;
-	}
-
+	UART_Queue_Put(uart1_received);
 }
 
 ISR(USART0_RX_vect)
 {
 	uart0_received = UDR0;
+/*	PORTA = uart0_received;*/
 	if (auto_control)
 	{
 		if (uart0_received == 'd')
 		{
 			running = false;
+			
 		}
 	}
 }
-
+// gustav
+void Simulation()
+{
+	if(auto_control)
+	{
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('b');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(90);
+		Movement_Queue_Put('r');
+		Movement_Queue_Put(90);
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(1);
+	}
+}
+//
 int main(void)
 {
 	DDRA = 0xFF;
@@ -234,12 +196,13 @@ int main(void)
 	robot_pos.y = 0;
 	robot_pos.angle = 0;
 	
-    spi_init_slave();  //Initialize slave SPI
+    Spi_init();		//Initialize slave SPI
 	Movement_Queue_Init();
+	SPI_queue_init();
 	UART_Queue_Init();
 	USART_Init();
 	Interrupt_Init();
-    sei();
+	sei();
 	
     while(1)
     {	
@@ -259,9 +222,95 @@ int main(void)
 				mode = 'D';
 				pc_ready = false;
 			}
-		
  		}
- 		
+		if(!UART_queue_empty())
+		{
+			UART_Queue_Get(&next_uart);
+			if(!Movement_queue_full() && next_uart != 'Y')
+			{
+				Movement_Queue_Put(next_uart);
+			}
+			switch(next_uart)
+			{
+				case 'A':
+				auto_control = !auto_control;
+				Movement_Queue_Out = (Movement_Queue_In - 1) % 21;
+				Movement_queue_length = 1;
+				//Gustav
+				Simulation();
+// 				Movement_Queue_Put('f');
+// 				Movement_Queue_Put(3);
+				//Gustav end
+				break;
+				
+				// Gustav start
+				
+				case 'f':
+				if(auto_control)
+				{
+					Movement_Queue_Put(3);
+				}
+				break;
+				
+				case 'b':
+				if(auto_control)
+				{
+					Movement_Queue_Put(3);
+				}
+				break;
+				
+				case 'r':
+				if(auto_control)
+				{
+					Movement_Queue_Put(90);
+				}
+				break;
+				
+				case 'l':
+				if(auto_control)
+				{
+					Movement_Queue_Put(90);
+				}
+				break;
+				
+				// Gustav end
+				
+				case 'S':
+				
+				mode = 'S';
+				drive_count = 0;
+				
+				break;
+				
+				case 'L':
+				
+				mode = 'L';
+				drive_count = 0;
+				
+				break;
+				
+				case 'T':
+				
+				mode = 'T';
+				drive_count = 0;
+				
+				break;
+				
+				case 'Y':
+				
+				pc_ready = true;
+				
+				break;
+				
+				default:
+				
+				mode = 'D';
+				drive_count = 0;
+
+				break;
+			}
+		}
+		
 		if (!Movement_queue_empty())
 		{
 			if(auto_control)
@@ -269,12 +318,13 @@ int main(void)
 				if (running == false)
 				{
 					Movement_Queue_Get(&next_movement);
+					//PORTA = next_movement;
 					USART_Transmit(0, 0);
-					if(next_movement == 'A' || next_movement == 'L')
+					if(next_movement == 'A' || next_movement == 'L' || next_movement == 's')
 					{
 						USART_Transmit(next_movement, 0);
 						USART_Transmit(0, 0);
-					} 
+					}
 					else
 					{
 						if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
@@ -287,72 +337,24 @@ int main(void)
 						running = true;
 					}
 				}
-	
 			}
 			else
 			{
+				Movement_Queue_Get(&next_movement);
 				USART_Transmit(0, 0);
 				USART_Transmit(next_movement, 0);
+				PORTA = next_movement;
 				USART_Transmit(0, 0);
 			}
 		}
 		
-// 		if(!UART_queue_empty())
-// 		{
-// 			UART_Queue_Get(&next_uart);
-// 			if(!Movement_queue_full() && next_uart != 'Y')
-// 			{
-// 				Movement_Queue_Put(next_uart);
-// 			}
-// 			switch(next_uart)
-// 			{
-// 				case 'A':
-// 				auto_control = !auto_control;
-// // 				Movement_Queue_Put('f');
-// // 				Movement_Queue_Put(3);
-// // 				Movement_Queue_Put('r');
-// // 				Movement_Queue_Put(90);
-// // 				Movement_Queue_Put('l');
-// // 				Movement_Queue_Put(90);
-// // 				Movement_Queue_Put('b');
-// // 				Movement_Queue_Put(3);
-// 				
-// 				break;
-// 				
-// 				case 'S':
-// 				
-// 				mode = 'S';
-// 				drive_count = 0;
-// 				
-// 				break;
-// 				
-// 				case 'L':
-// 				
-// 				mode = 'L';
-// 				drive_count = 0;
-// 				
-// 				break;
-// 				
-// 				case 'T':
-// 				
-// 				mode = 'T';
-// 				drive_count = 0;
-// 				
-// 				break;
-// 				
-// 				case 'Y':
-// 				
-// 				pc_ready = true;
-// 			
-// 				break;
-// 				
-// 				default:
-// 				
-// 				mode = 'D';
-// 				drive_count = 0;
-// 
-// 				break;
-// 			}
-// 		}
+		if(mode == 'D')
+		{
+			Dequeue_SPI_queue_D_mode();
+		}
+		else if(mode == 'L')
+		{
+			Dequeue_SPI_queue_L_mode();
+		}
 	}
 }

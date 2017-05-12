@@ -12,9 +12,9 @@
 /* Queue structure */
 #define MOVEMENT_QUEUE_ELEMENTS 20
 #define MOVEMENT_QUEUE_SIZE (MOVEMENT_QUEUE_ELEMENTS + 1)
-volatile uint8_t Movement_Queue[MOVEMENT_QUEUE_SIZE];
+uint8_t Movement_Queue[MOVEMENT_QUEUE_SIZE];
 int Movement_Queue_In, Movement_Queue_Out;
-volatile int Movement_queue_length = 0;
+int Movement_queue_length = 0;
 
 
 /* Very simple queue
@@ -31,7 +31,7 @@ volatile int Movement_queue_length = 0;
 
 void Movement_Queue_Init(void)
 {
-    Movement_Queue_In = Movement_Queue_Out = 0;
+    Movement_Queue_In = Movement_Queue_Out = Movement_queue_length = 0;
 }
 
 void Movement_Queue_Put(uint8_t new)

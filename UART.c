@@ -29,7 +29,7 @@
 #define UART_QUEUE_ELEMENTS 20
 #define UART_QUEUE_SIZE (UART_QUEUE_ELEMENTS + 1)
 volatile uint8_t UART_Queue[UART_QUEUE_SIZE];
-uint8_t UART_Queue_In, UART_Queue_Out;
+uint8_t volatile UART_Queue_In, UART_Queue_Out;
 volatile int UART_queue_length = 0;
 
 void USART_Init( )
