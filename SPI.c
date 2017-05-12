@@ -27,7 +27,7 @@
 
 
 /* Queue structure */
-#define SPI_QUEUE_ELEMENTS 100
+#define SPI_QUEUE_ELEMENTS 1000
 #define SPI_QUEUE_SIZE (SPI_QUEUE_ELEMENTS + 1)
 volatile uint8_t SPI_queue[SPI_QUEUE_SIZE];
 volatile uint8_t SPI_queue_in, SPI_queue_out;
@@ -232,22 +232,28 @@ void Dequeue_SPI_queue_L_mode()
 		SPI_queue_remove();
 		
 		distance_array[distance_counter] = SPI_queue_peek(SPI_queue_out);
+		USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 		distance_counter++;
 		SPI_queue_remove();
 		
 		distance_array[distance_counter] = SPI_queue_peek(SPI_queue_out);
+		USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 		distance_counter++;
 		SPI_queue_remove();
 
 		angle_array[angle_counter] = SPI_queue_peek(SPI_queue_out);
+		USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 		angle_counter++;
 		SPI_queue_remove();
 
 		angle_array[angle_counter] = SPI_queue_peek(SPI_queue_out);
+		USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 		angle_counter++;
 		SPI_queue_remove();
 		
-		if(angle_counter == 4000)
+		PORTA = angle_counter;
+		
+		if(angle_counter >= 4000)
 		{
 			angle_counter = 0;
 			USART_Transmit('S', 0);
@@ -258,14 +264,19 @@ void Dequeue_SPI_queue_L_mode()
 		}
 		dequeue_L = false;
 	}
+	else 
+	{
+		SPI_queue_remove();
+	}
 }
 
 void Start_dequeuing_L_mode()
 {
 	uint8_t first_value = SPI_queue_peek(SPI_queue_out);
 	uint8_t second_value = SPI_queue_peek(SPI_queue_out + 1);
+	uint8_t third_value = SPI_queue_peek(SPI_queue_out + 2);
 	
-	if(first_value == 0xFF && second_value == 0xFF)
+	if(first_value == 0xFF && second_value == 0xFF && third_value != 0xFF)
 	{
 		dequeue_L = true;
 	}

@@ -154,12 +154,6 @@
     <Compile Include="SPI.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="SPI_slave.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="SPI_slave.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="UART.c">
       <SubType>compile</SubType>
     </Compile>

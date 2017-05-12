@@ -221,6 +221,8 @@ int main(void)
 			{
 				case 'A':
 				auto_control = !auto_control;
+				Movement_Queue_Out = (Movement_Queue_In - 1) % 21;
+				Movement_queue_length = 1;
 				//Gustav
 				Simulation();
 // 				Movement_Queue_Put('f');
@@ -303,13 +305,13 @@ int main(void)
 				if (running == false)
 				{
 					Movement_Queue_Get(&next_movement);
-					PORTA = next_movement;
+					//PORTA = next_movement;
 					USART_Transmit(0, 0);
-					if(next_movement == 'A' || next_movement == 'L')
+					if(next_movement == 'A' || next_movement == 'L' || next_movement == 's')
 					{
 						USART_Transmit(next_movement, 0);
 						USART_Transmit(0, 0);
-					} 
+					}
 					else
 					{
 						if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
