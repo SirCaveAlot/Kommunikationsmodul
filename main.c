@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+
 #include "SPI_slave.h"
 #include "UART.h"
 #include "Movement.h"
@@ -58,7 +59,15 @@ ISR(SPI_STC_vect)
 		}
 		else if (drive_count >= 2)
 		{
-			if(drive_count == 6)
+			if(drive_count == 3)
+			{
+				Right_side_detectable(data_received);
+			}
+			else if(drive_count == 4)
+			{
+				Left_side_detectable(data_received);
+			}
+			else if(drive_count == 6)
 			{
 				distance_traveled = data_received;
 				data_received = Wheelshifts_to_distance(data_received);
@@ -73,15 +82,15 @@ ISR(SPI_STC_vect)
 				distance_traveled = 0;
 				data_received = Wheelshifts_to_distance(data_received);
 			}
-			if(drive_count == 8)
+			else if(drive_count == 8)
 			{
 				USART_Transmit(last_movement, 1);
 			}
-			if(drive_count == 9)
+			else if(drive_count == 9)
 			{
 				USART_Transmit(Get_robot_direction(), 1);
 			}
-			if(drive_count == 11)
+			else if(drive_count == 11)
 			{
 				drive_count = 0;
 				USART_Transmit(mode, 1);

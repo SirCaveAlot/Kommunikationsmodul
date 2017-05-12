@@ -18,9 +18,9 @@ extern uint8_t last_movement;
 
 typedef struct coordinates
 {
-	double x;
-	double y;
-	double angle;
+	int x;
+	int y;
+	float angle;
 }coordinates;
 
 extern coordinates robot_pos;

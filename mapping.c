@@ -5,10 +5,6 @@
  * Author : hyggan
  */ 
 	
-#include "mapping.h"
-#include "matchtile.h"
-#include "global_variables.h"
-
 #include <avr/io.h>
 
 #include <math.h>
@@ -16,6 +12,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+#include "mapping.h"
+#include "matchtile.h"
+#include "global_variables.h"
 
 
 #define val M_PI/180
@@ -25,6 +25,9 @@
 #define WHEEL_DIAMETER 63.34
 #define WHEEL_CIRCUMFERENCE (WHEEL_DIAMETER * M_PI)
 #define WHEEL_SLICE (WHEEL_CIRCUMFERENCE/16)
+
+volatile bool right_side_detected;
+volatile bool left_side_detected;
 
 void Set_robot_position(double xpos, double ypos)
 {
@@ -75,7 +78,7 @@ uint8_t Get_robot_direction()
 	return direction;
 }
 
-uint16_t Wheelshifts_to_distance(uint8_t nr_of_wheel_shifts)
+uint8_t Wheelshifts_to_distance(uint8_t nr_of_wheel_shifts)
 {
 	return WHEEL_SLICE*nr_of_wheel_shifts;
 }
@@ -85,19 +88,19 @@ void update_robot_position(uint8_t nr_of_wheel_shifts)
 		
 	if(robot_pos.angle == 0)
 	{
-		robot_pos.y = robot_pos.y + Wheelshifts_to_distance(nr_of_wheel_shifts);
+		robot_pos.y = robot_pos.y + round(Wheelshifts_to_distance(nr_of_wheel_shifts)/10);
 	}
 	else if(robot_pos.angle == M_PI/2)
 	{
-		robot_pos.x = robot_pos.x + Wheelshifts_to_distance(nr_of_wheel_shifts);
+		robot_pos.x = robot_pos.x + round(Wheelshifts_to_distance(nr_of_wheel_shifts)/10);
 	}
 	else if(robot_pos.angle == M_PI)
 	{
-		robot_pos.y = robot_pos.y - Wheelshifts_to_distance(nr_of_wheel_shifts);
+		robot_pos.y = robot_pos.y - round(Wheelshifts_to_distance(nr_of_wheel_shifts)/10);
 	}
 	else if(robot_pos.angle == 3*M_PI/2)
 	{
-		robot_pos.x = robot_pos.x - Wheelshifts_to_distance(nr_of_wheel_shifts);
+		robot_pos.x = robot_pos.x - round(Wheelshifts_to_distance(nr_of_wheel_shifts)/10);
 	}
 }
 
@@ -106,31 +109,149 @@ uint8_t Get_robot_tile_x()
 	int x_tile_cm;
 	uint8_t x_tile_matrix = 255;
 	
-	for(int i=0; i < 29; i++)
+	for(int i=0; i < 28; i++)
 	{
 		if((robot_pos.x > line_array_x[i] ) && (robot_pos.x < line_array_x[i+1]))
 		{
 			x_tile_cm = (line_array_x[i] + line_array_x[i+1])/2;
-			x_tile_matrix = Convert_rob_loc_map_glob_x(x_tile_cm);	
+			x_tile_matrix = Convert_rob_loc_map_glob_x(x_tile_cm);
+			return x_tile_matrix;	
 		}	
 	}
-	
 	return x_tile_matrix;
 }
+
 uint8_t Get_robot_tile_y()
 {
 	int y_tile_cm;
 	uint8_t y_tile_matrix = 255;
 	
-	for(int i=0; i < 28; i++)
+	for(int i=0; i < 27; i++)
 	{
 		if((robot_pos.y > line_array_y[i] ) && (robot_pos.y < line_array_y[i+1]))
 		{
 			y_tile_cm = (line_array_y[i] + line_array_y[i+1])/2;
 			y_tile_matrix = Convert_rob_loc_map_glob_y(y_tile_cm);
+			return y_tile_matrix;
 		}
 	}
 	return y_tile_matrix;
+}
+
+void Right_side_detectable(uint8_t IR_data)
+{
+	if(IR_data >= 45)
+	{
+		right_side_detected = true;
+	}
+	else
+	{
+		right_side_detected = false;
+	}
+}
+
+void Left_side_detectable(uint8_t IR_data)
+{
+	if(IR_data >= 45)
+	{
+		left_side_detected = true;
+	}
+	else
+	{
+		left_side_detected = false;
+	}
+}
+
+void Set_tile_from_ir()
+{
+	if((((robot_pos.x % 40) > 10) && ((robot_pos.x % 40) < 30)) && (((robot_pos.y % 40) > 10) && ((robot_pos.y % 40) < 30))) // Return if robot in between two tiles
+	{
+		return;
+	}
+	
+	uint8_t x_tile_robot = Get_robot_tile_x();
+	uint8_t y_tile_robot = Get_robot_tile_y();
+	uint8_t direction_tile_robot = Get_robot_direction();
+	
+	if(direction_tile_robot == 8) // direction up
+	{
+		if(left_side_detected)
+		{
+			Set_tile(x_tile_robot - 1, y_tile_robot, 20); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot - 1, y_tile_robot, 1); // Check tile value. Open tile
+		}
+		if(right_side_detected)
+		{
+			Set_tile(x_tile_robot + 1, y_tile_robot, 20); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot + 1, y_tile_robot, 1); // Check tile value. Open tile
+		}
+	}
+	
+	else if(direction_tile_robot == 6) // direction right
+	{
+		if(left_side_detected)
+		{
+			Set_tile(x_tile_robot, y_tile_robot - 1, 20); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot, y_tile_robot - 1, 1); // Check tile value. Open tile
+		}
+		if(right_side_detected)
+		{
+			Set_tile(x_tile_robot, y_tile_robot + 1, 20); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot, y_tile_robot + 1, 1); // Check tile value. Open tile
+		}
+	}
+	
+	else if(direction_tile_robot == 2) // direction down
+	{
+		if(left_side_detected)
+		{
+			Set_tile(x_tile_robot + 1, y_tile_robot, 20); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot + 1, y_tile_robot, 1); // Check tile value. Open tile
+		}
+		if(right_side_detected)
+		{
+			Set_tile(x_tile_robot - 1, y_tile_robot, 20); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot - 1, y_tile_robot, 1); // Check tile value. Open tile
+		}
+	}
+	
+	else if(direction_tile_robot == 4) // direction left
+	{
+		if(left_side_detected)
+		{
+			Set_tile(x_tile_robot, y_tile_robot + 1, 20); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot, y_tile_robot + 1, 1); // Check tile value. Open tile
+		}
+		if(right_side_detected)
+		{
+			Set_tile(x_tile_robot, y_tile_robot - 1, 20); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot, y_tile_robot - 1, 1); // Check tile value. Open tile
+		}
+	}	
 }
 
 

@@ -5,8 +5,10 @@
  *  Author: andan879
  */
  
-#include "global_variables.h"
+#include <avr/io.h>
 #include <stdint.h>
+
+#include "global_variables.h"
 
 volatile uint8_t distance_traveled = 0;
 uint8_t last_movement = 0;

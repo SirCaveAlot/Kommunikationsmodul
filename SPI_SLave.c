@@ -4,6 +4,7 @@
 #include <avr/interrupt.h>
 #include <stdbool.h>
 #include <stdint.h>
+
 #include "SPI_slave.h"
 
 /* Queue structure */
