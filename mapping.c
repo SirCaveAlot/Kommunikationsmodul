@@ -164,7 +164,7 @@ void Left_side_detectable(uint8_t IR_data)
 
 void Set_tile_from_ir()
 {
-	if((((robot_pos.x % 40) > 10) && ((robot_pos.x % 40) < 30)) && (((robot_pos.y % 40) > 10) && ((robot_pos.y % 40) < 30))) // Return if robot in between two tiles
+	if((((robot_pos.x % 40) < 10) && ((robot_pos.x % 40) > 30)) && (((robot_pos.y % 40) < 10) && ((robot_pos.y % 40) > 30))) // Return if robot in between two tiles
 	{
 		return;
 	}
@@ -251,7 +251,30 @@ void Set_tile_from_ir()
 		{
 			Set_tile(x_tile_robot, y_tile_robot - 1, 1); // Check tile value. Open tile
 		}
-	}	
+	}
+}
+
+void Set_peepz_in_da_needz()
+{
+	uint8_t peep_x = robot_pos.x % 40;
+	uint8_t peep_y = robot_pos.y % 40;
+	if (Get_robot_direction() == 8)
+	{
+		peep_y--;
+	}
+	else if (Get_robot_direction() == 2)
+	{
+		peep_y++;
+	}
+	else if (Get_robot_direction() == 6)
+	{
+		peep_x++;
+	}
+	else if (Get_robot_direction() == 4)
+	{
+		peep_x--;
+	}
+	map_array[peep_y][peep_x] = 2;
 }
 
 
@@ -360,14 +383,14 @@ int array_y[10];
 
 
 void Window ()
-{		
+{
 	//Tar ut ett fönster på ett visst antal element och gör en vekotr av dem
 	uint16_t vector_position = 0;
 	// Om det finns mindre plats än window_size, ta bar ett fönster de element som finns kvar
 	for(int index = 0; index < size + 1 - window_size; index = index + 2)
 	{
 		for(int i = 0; i < 2 * window_size; i++)
-		{   
+		{
 			vector_position = index + i;
 			if (i % 2 == 0)
 			{
@@ -375,7 +398,7 @@ void Window ()
 				(cos(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * marcus_to_radian + (M_PI / 2) + (robot_pos.angle))) + robot_pos.x;
 				array_y[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
 				(sin(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * marcus_to_radian + (M_PI / 2) + (robot_pos.angle))) + robot_pos.y;
-			}			
+			}
 		}
 		
 		Update_map(array_x, array_y);

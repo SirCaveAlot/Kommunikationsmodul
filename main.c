@@ -58,7 +58,12 @@ ISR(USART0_RX_vect)
 		if (uart0_received == 'd')
 		{
 			running = false;
-			
+		}
+		else if (uart0_received == 't')
+		{
+			last_movement = 'b';
+			Set_peepz_in_da_needz();
+			USART_Transmit('B', 0);
 		}
 	}
 }
@@ -74,7 +79,7 @@ void Simulation()
 		Movement_Queue_Put('r');
 		Movement_Queue_Put(90);
 		Movement_Queue_Put('f');
-		Movement_Queue_Put(2);,
+		Movement_Queue_Put(2);
 		
 // 		Movement_Queue_Put('b');
 // 		Movement_Queue_Put(3);
@@ -258,6 +263,22 @@ int main(void)
 			}
 			else
 			{
+				if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
+				{
+					last_movement = next_movement;
+					if (next_movement == 'r')
+					{
+						robot_turn_right();
+					}
+					else if(next_movement == 'l')
+					{
+						robot_turn_left();
+					}
+					else if(next_movement == 'b')
+					{
+						robot_turn_around();
+					}
+				}
 				Movement_Queue_Get(&next_movement);
 				USART_Transmit(0, 0);
 				USART_Transmit(next_movement, 0);
