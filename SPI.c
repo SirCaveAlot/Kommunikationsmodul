@@ -128,7 +128,7 @@ void SPI_queue_remove()
 
 void Dequeue_SPI_queue_D_mode()
 {		
-	if(SPI_queue_length < 12)
+	if(SPI_queue_length < 13)
 	{
 		dequeue = false;
 		return;
@@ -151,6 +151,9 @@ void Dequeue_SPI_queue_D_mode()
 			SPI_queue_get(&left_IR);
 			USART_Transmit(left_IR, 1);
 			Left_side_detectable(left_IR);
+			
+			//forward IR
+			SPI_queue_remove();
 			
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
