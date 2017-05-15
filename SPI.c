@@ -167,6 +167,10 @@ void Dequeue_SPI_queue_D_mode()
 			{
 				update_robot_position(distance_traveled);
 			}
+			else if(running == true && last_movement == 'b')
+			{
+				update_robot_position(-distance_traveled);
+			}
 			distance_traveled = 0;
 
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
