@@ -285,6 +285,7 @@ int main(void)
 			}
 			else
 			{
+				Movement_Queue_Get(&next_movement);
 				if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
 				{
 					if(last_movement == 'b' && next_movement != 'b')
@@ -305,7 +306,6 @@ int main(void)
 						robot_turn_around();
 					}
 				}
-				Movement_Queue_Get(&next_movement);
 				USART_Transmit(0, 0);
 				USART_Transmit(next_movement, 0);
 				USART_Transmit(0, 0);
