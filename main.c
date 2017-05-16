@@ -95,6 +95,8 @@ void Simulation()
 		Movement_Queue_Put(90);
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(3);
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(90);
 		Movement_Queue_Put('L');
 				
 // 		Movement_Queue_Put('b');
@@ -256,6 +258,10 @@ int main(void)
 					{
 						if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
 						{
+							if(last_movement == 'b' && next_movement != 'b')
+							{
+								robot_turn_around();
+							}
 							last_movement = next_movement;
 							if (next_movement == 'r')
 							{
@@ -281,6 +287,10 @@ int main(void)
 			{
 				if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
 				{
+					if(last_movement == 'b' && next_movement != 'b')
+					{
+						robot_turn_around();
+					}
 					last_movement = next_movement;
 					if (next_movement == 'r')
 					{

@@ -16,7 +16,7 @@ int line_array_x[30];
 int line_array_y[29];
 
 int Get_tile(int xcoord, int ycoord);
-int Set_tile(int xcoord, int ycoord, int newTile);
+void Set_tile(uint8_t xcoord, uint8_t ycoord, uint8_t newTile);
 int Convert_rob_loc_map_glob_x(int coordRobot);
 int Convert_rob_loc_map_glob_y(int coordRobot);
 void init_const();

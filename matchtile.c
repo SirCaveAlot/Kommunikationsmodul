@@ -41,18 +41,16 @@ int Get_tile(int xcoord, int ycoord)
 	}
 }
 
-int Set_tile(int xcoord, int ycoord, int newTile)
+void Set_tile(uint8_t xcoord, uint8_t ycoord, uint8_t newTile)
 {
 	if((xcoord<0) || (ycoord < 0) || (xcoord>29) || (ycoord>29))
 	{
-		return 1111;
+		return;
 	}
 	else
 	{
 		map_array[ycoord][xcoord] = newTile;
 	}
-	
-	return 0;
 }
 
 int Convert_rob_loc_map_glob_x(int coordRobot)
@@ -367,11 +365,11 @@ int Match_tile_y(int x[],int y[])
 	}
 	else if((!X_line(x,y)) && (No_corner(x,y)))
 	{
-		if(robot_pos.y<best_match_y)
+		if(robot_pos.y/10<best_match_y)
 		{
 			coord_y = best_match_y + 20;
 		}
-		else if(robot_pos.y>best_match_y)
+		else if(robot_pos.y/10>best_match_y)
 		{
 			coord_y = best_match_y - 20;
 		}
@@ -406,11 +404,12 @@ void Update_map(int x[],int y[])
 		{
 			newVal = 5;
 		}
-		else if(current_tile_value < 255)
+		else if(current_tile_value < 255 && current_tile_value != 1)
 		{
 			newVal = current_tile_value + 1;
 		}
 		
-		//Set_tile(x_tile_glob, y_tile_glob, newVal);	
+		
+		Set_tile(x_tile_glob, y_tile_glob, newVal);	
 	}
 }

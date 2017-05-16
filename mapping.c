@@ -29,7 +29,7 @@
 volatile bool right_side_detected;
 volatile bool left_side_detected;
 
-void Set_robot_position(double xpos, double ypos)
+void Set_robot_position(int16_t xpos, int16_t ypos)
 {
 	robot_pos.x = xpos;
 	robot_pos.y = ypos; 
@@ -80,32 +80,32 @@ uint8_t Get_robot_direction()
 
 uint8_t Wheelshifts_to_distance(uint8_t nr_of_wheel_shifts)
 {
-	/*if(last_movement == 'b')
-	{
-		return -WHEEL_SLICE * nr_of_wheel_shifts;
-	}*/
+// 	if(last_movement == 'b')
+// 	{
+// 		return -WHEEL_SLICE * nr_of_wheel_shifts;
+// 	}
 	return WHEEL_SLICE*nr_of_wheel_shifts;
 }
 
-void update_robot_position(uint8_t dist_traveled_mm)
+void update_robot_position(uint16_t dist_traveled_mm)
 {
 	if(robot_pos.angle == 0)
 	{   
-		robot_pos.y = robot_pos.y + dist_traveled_mm/10;
+		robot_pos.y = robot_pos.y + dist_traveled_mm;
 	}
 	else if(robot_pos.angle == M_PI/2)
 	{
-		robot_pos.x = robot_pos.x - dist_traveled_mm/10;
+		robot_pos.x = robot_pos.x - dist_traveled_mm;
 	}
 	else if(robot_pos.angle == M_PI)
 	{
-		robot_pos.y = robot_pos.y - dist_traveled_mm/10;
+		robot_pos.y = robot_pos.y - dist_traveled_mm;
 	}
 	else if(robot_pos.angle == 3*M_PI/2)
 	{
-		robot_pos.x = robot_pos.x + dist_traveled_mm/10;
+		robot_pos.x = robot_pos.x + dist_traveled_mm;
 	}
-	Set_tile(Get_robot_tile_x(), Get_robot_tile_y(), 3);
+	Set_tile(Get_robot_tile_x(), Get_robot_tile_y(), 1);
 }
 
 uint8_t Get_robot_tile_x()
@@ -115,7 +115,7 @@ uint8_t Get_robot_tile_x()
 	
 	for(int i=0; i < 28; i++)
 	{
-		if((robot_pos.x > line_array_x[i] ) && (robot_pos.x < line_array_x[i+1]))
+		if((robot_pos.x/10 > line_array_x[i] ) && (robot_pos.x/10 < line_array_x[i+1]))
 		{
 			x_tile_cm = (line_array_x[i] + line_array_x[i+1])/2;
 			x_tile_matrix = Convert_rob_loc_map_glob_x(x_tile_cm);
@@ -132,7 +132,7 @@ uint8_t Get_robot_tile_y()
 	
 	for(int i=0; i < 27; i++)
 	{
-		if((robot_pos.y > line_array_y[i] ) && (robot_pos.y < line_array_y[i+1]))
+		if((robot_pos.y/10 > line_array_y[i] ) && (robot_pos.y/10 < line_array_y[i+1]))
 		{
 			y_tile_cm = (line_array_y[i] + line_array_y[i+1])/2;
 			y_tile_matrix = Convert_rob_loc_map_glob_y(y_tile_cm);
@@ -168,10 +168,10 @@ void Left_side_detectable(uint8_t IR_data)
 
 void Set_tile_from_ir()
 {
-	if((((robot_pos.x % 40) < 10) && ((robot_pos.x % 40) > 30)) && (((robot_pos.y % 40) < 10) && ((robot_pos.y % 40) > 30))) // Return if robot in between two tiles
+	/*if((((robot_pos.x % 40) < 10) || ((robot_pos.x % 40) > 30)) && (((robot_pos.y % 40) < 10)  || ((robot_pos.y % 40) > 30))) // Return if robot in between two tiles
 	{
 		return;
-	}
+	}*/
 	
 	uint8_t x_tile_robot = Get_robot_tile_x();
 	uint8_t y_tile_robot = Get_robot_tile_y();
@@ -404,9 +404,9 @@ void Window ()
 			if (i % 2 == 0)
 			{
 				array_x[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
-				(cos(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * marcus_to_radian + (M_PI / 2) - (robot_pos.angle))) + robot_pos.x;
+				(cos(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * marcus_to_radian + (M_PI / 2) - (robot_pos.angle))) + robot_pos.x/10;
 				array_y[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
-				(sin(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * marcus_to_radian + (M_PI / 2) - (robot_pos.angle))) + robot_pos.y;
+				(sin(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * marcus_to_radian + (M_PI / 2) - (robot_pos.angle))) + robot_pos.y/10;
 			}
 		}
 		
