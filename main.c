@@ -72,15 +72,31 @@ void Simulation()
 {
 	if(auto_control)
 	{
-		Movement_Queue_Put('L');
+// 		Movement_Queue_Put('L');
+// 		Movement_Queue_Put('f');
+// 		Movement_Queue_Put(3);
+// 		Movement_Queue_Put('L');
+// 		Movement_Queue_Put('r');
+// 		Movement_Queue_Put(90);
+// 		Movement_Queue_Put('f');
+// 		Movement_Queue_Put(2);
+		
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(90);
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(90);
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(90);
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(3);
 		Movement_Queue_Put('L');
-		Movement_Queue_Put('r');
-		Movement_Queue_Put(90);
-		Movement_Queue_Put('f');
-		Movement_Queue_Put(2);
-		
+				
 // 		Movement_Queue_Put('b');
 // 		Movement_Queue_Put(3);
 // 		Movement_Queue_Put('l');
@@ -111,7 +127,7 @@ int main(void)
 	sei();
 	
     while(1)
-    {	
+    {
 		if(mode == 'S')
 		{
 			Window();
@@ -282,7 +298,6 @@ int main(void)
 				Movement_Queue_Get(&next_movement);
 				USART_Transmit(0, 0);
 				USART_Transmit(next_movement, 0);
-				PORTA = next_movement;
 				USART_Transmit(0, 0);
 			}
 		}

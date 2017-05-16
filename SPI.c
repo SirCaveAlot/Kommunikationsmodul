@@ -153,6 +153,7 @@ void Dequeue_SPI_queue_D_mode()
 			Left_side_detectable(left_IR);
 			
 			//forward IR
+			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
 			
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
@@ -166,14 +167,11 @@ void Dequeue_SPI_queue_D_mode()
 			distance_traveled = (distance_traveled + Wheelshifts_to_distance(SPI_queue_peek(SPI_queue_out))) / 2;
 			USART_Transmit(distance_traveled, 1);
 			SPI_queue_remove();
-			if (running == true && last_movement == 'f')
+			if (running == true && (last_movement == 'f' || last_movement == 'b'))
 			{
 				update_robot_position(distance_traveled);
 			}
-			else if(running == true && last_movement == 'b')
-			{
-				update_robot_position(-distance_traveled);
-			}
+			
 			distance_traveled = 0;
 
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
@@ -195,6 +193,7 @@ void Dequeue_SPI_queue_D_mode()
 			}
 			USART_Transmit(mode, 1);
 			
+			Set_tile_from_ir();
 			dequeue = false;
 		}
 	}
@@ -268,7 +267,6 @@ void Dequeue_SPI_queue_L_mode()
 		
 		if(angle_counter == 4000)
 		{
-			PORTA &= (1<<0);
 			mode = 'S';
 			angle_counter = 0;
 			running = false;

@@ -24,7 +24,7 @@ int groupArrayY[4]={301, 298, 296, 305};
 */
 
 
-int16_t max_avg_dist = 20;
+int16_t max_avg_dist = 15;
 int no_No_corners = SIZE_OF_ARRAY(line_array_x);
 int no_y_lines = SIZE_OF_ARRAY(line_array_y);
 
@@ -397,11 +397,20 @@ void Update_map(int x[],int y[])
 	{
 		int x_tile_glob=Convert_rob_loc_map_glob_x(x_tile_rob);
 		int y_tile_glob=Convert_rob_loc_map_glob_y(y_tile_rob);
+		int newVal = 0;
 		
 		//Add +1 for each time the tile is detected
+		int current_tile_value = Get_tile(x_tile_glob,y_tile_glob);
 		
-		int newVal=Get_tile(x_tile_glob,y_tile_glob) + 1;
+		if(current_tile_value == 0)
+		{
+			newVal = 5;
+		}
+		else if(current_tile_value < 255)
+		{
+			newVal = current_tile_value + 1;
+		}
 		
-		Set_tile(x_tile_glob, y_tile_glob, newVal);	
+		//Set_tile(x_tile_glob, y_tile_glob, newVal);	
 	}
 }
