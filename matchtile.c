@@ -17,6 +17,10 @@ int line_array_x[30]={-580, -540, -500, -460, -420, -380, -340, -300, -260, -220
 int line_array_y[29]={-540, -500, -460, -420, -380, -340, -300, -260, -220, -180, -140, -100, -60, -20,
 20, 60, 100, 140, 180, 220, 260, 300, 340, 380, 420, 460, 500, 540, 580};
 
+
+int16_t avg_x_per_sample;
+int16_t avg_y_per_sample;
+
 //test stuff
 /*
 int groupArrayX[4]={467, 469, 475, 490};
@@ -25,8 +29,8 @@ int groupArrayY[4]={301, 298, 296, 305};
 
 
 int16_t max_avg_dist = 15;
-int no_No_corners = SIZE_OF_ARRAY(line_array_x);
-int no_y_lines = SIZE_OF_ARRAY(line_array_y);
+int x_array_size = SIZE_OF_ARRAY(line_array_x);
+int y_array_size = SIZE_OF_ARRAY(line_array_y);
 
 
 int Get_tile(int xcoord, int ycoord)
@@ -90,23 +94,22 @@ int avg_array(int a[], int num_elements)
 }
 
 //Matches a set/group of measured x or y values to the closest x or y line
-int match_x(int a[])
+int match_x()
 {
 	int16_t temp_x;
 	int32_t temp_min_x;
 	int32_t bestmatch_x;
-	int32_t avg_point_group_x;
+
 	temp_min_x=10000;
 	bestmatch_x = 11111;
 
-	avg_point_group_x = avg_array(a,window_size);
-
-	for(unsigned int i=0; i<no_No_corners+1; ++i)
+	
+	for(unsigned int i=0; i<x_array_size; ++i)
 	{
 		temp_x = line_array_x[i];
-		if((temp_min_x > abs(avg_point_group_x - temp_x)) & (abs(avg_point_group_x - temp_x) < max_avg_dist))
+		if((temp_min_x > abs(avg_x_per_sample - temp_x)) && (abs(avg_x_per_sample - temp_x) < max_avg_dist))
 		{
-			temp_min_x=abs(avg_point_group_x-temp_x);
+			temp_min_x=abs(avg_x_per_sample-temp_x);
 			bestmatch_x = temp_x;
 		}
 	}
@@ -121,23 +124,23 @@ int match_x(int a[])
 	
 }
 
-int match_y(int a[])
+int match_y()
 {
 	int16_t temp_y;
 	int32_t temp_min_y;
 	int32_t best_match_y;
-	int32_t avg_point_group_y;
+	
 	temp_min_y=10000;
 	best_match_y = 11111;
 
-	avg_point_group_y = avg_array(a,window_size);
+	
 
-	for(unsigned int i=0; i<no_y_lines+1; ++i)
+	for(unsigned int i=0; i<y_array_size; ++i)
 	{
 		temp_y = line_array_y[i];
-		if((temp_min_y > abs(avg_point_group_y - temp_y)) & (abs(avg_point_group_y - temp_y) < max_avg_dist))
+		if((temp_min_y > abs(avg_y_per_sample - temp_y)) && (abs(avg_y_per_sample - temp_y) < max_avg_dist))
 		{
-			temp_min_y=abs(avg_point_group_y-temp_y);
+			temp_min_y=abs(avg_y_per_sample-temp_y);
 			best_match_y = temp_y;
 		}
 	}
@@ -146,25 +149,25 @@ int match_y(int a[])
 
 //Matches a set of measured x or y values to the next closest x or y line
 
-int Match_x_next(int a[], int dont_match)
+int Match_x_next(int dont_match)
 {
 	if(dont_match!=1)
 	{
 		int16_t temp_x;
 		int32_t temp_min_x;
 		int32_t bestmatch_x;
-		int32_t avg_point_group_x;
+		
 		temp_min_x=10000;
 		bestmatch_x = 11111;
 
-		avg_point_group_x = avg_array(a,window_size);
+		
 
-		for(unsigned int i=0; i<no_No_corners+1; ++i)
+		for(unsigned int i=0; i<x_array_size; ++i)
 		{
 			temp_x = line_array_x[i];
-			if((temp_min_x > abs(avg_point_group_x - temp_x)) && (temp_x!=dont_match))
+			if((temp_min_x > abs(avg_x_per_sample - temp_x)) && (temp_x!=dont_match))
 			{
-				temp_min_x=abs(avg_point_group_x-temp_x);
+				temp_min_x=abs(avg_x_per_sample-temp_x);
 				bestmatch_x = temp_x;
 			}
 		}
@@ -177,25 +180,24 @@ int Match_x_next(int a[], int dont_match)
 	
 }
 
-int Match_y_next(int a[], int dont_match)
+int Match_y_next( int dont_match)
 {
 	if(dont_match!=1)
 	{
 		int16_t temp_y;
 		int32_t temp_min_y;
 		int32_t best_match_y;
-		int32_t avg_point_group_y;
+		
 		temp_min_y=10000;
 		best_match_y = 11111;
 
-		avg_point_group_y = avg_array(a,window_size);
 
-		for(unsigned int i=0; i<no_y_lines+1; ++i)
+		for(unsigned int i=0; i<y_array_size; ++i)
 		{
 			temp_y = line_array_y[i];
-			if((temp_min_y > abs(avg_point_group_y - temp_y)) && (temp_y!=dont_match))
+			if((temp_min_y > abs(avg_y_per_sample - temp_y)) && (temp_y!=dont_match))
 			{
-				temp_min_y=abs(avg_point_group_y-temp_y);
+				temp_min_y=abs(avg_y_per_sample-temp_y);
 				best_match_y = temp_y;
 			}
 		}
@@ -251,7 +253,7 @@ bool No_corner(int x[], int y[])
 	int max_diff_x = abs(max_x-min_x);
 	int max_diff_y = abs(max_y-min_y);
 	
-	if((max_diff_x >= allowed_point_difference_Corner) && (max_diff_y > allowed_point_difference_Corner))
+	if((max_diff_x >= allowed_point_difference_Corner) && (max_diff_y >= allowed_point_difference_Corner))
 	{
 		return false;
 	}
@@ -274,11 +276,11 @@ bool X_line(int x[], int y[])
 	int max_diff_x = abs(max_x-min_x);
 	int max_diff_y = abs(max_y-min_y);
 	
-	if((max_diff_x <= allowed_point_difference_XorY) & (max_diff_y > allowed_point_difference_XorY))
+	if((max_diff_x <= allowed_point_difference_XorY) && (max_diff_y > allowed_point_difference_XorY))
 	{
 		return true;
 	}
-	else if((max_diff_x > allowed_point_difference_XorY) & (max_diff_y < allowed_point_difference_XorY))
+	else if((max_diff_x >= allowed_point_difference_XorY) && (max_diff_y < allowed_point_difference_XorY))
 	{
 		return false;
 	}
@@ -295,18 +297,18 @@ int Match_tile_x(int x[],int y[])
 {
 	int coord_x;
 	
-	int bestmatch_x = match_x(x);
-	int next_best_match_x = Match_x_next(x,bestmatch_x);
+	int bestmatch_x = match_x();
+	int next_best_match_x = Match_x_next(bestmatch_x);
 	int avg_best_x = (bestmatch_x+next_best_match_x)/2;
 	
 	if ((X_line(x,y)) && (No_corner(x,y)))
 	{
 		//Put tile on the correct side of the detected line
-		if(robot_pos.x<bestmatch_x)
+		if(robot_pos.x/10<bestmatch_x)
 		{
 			coord_x = bestmatch_x + 20; 
 		}
-		else if(robot_pos.x>bestmatch_x)
+		else if(robot_pos.x/10>bestmatch_x)
 		{
 			coord_x = bestmatch_x - 20;
 		}
@@ -343,8 +345,8 @@ int Match_tile_y(int x[],int y[])
 {
 	int coord_y;
 	
-	int best_match_y = match_y(y);
-	int next_best_match_y = Match_y_next(y,best_match_y);
+	int best_match_y = match_y();
+	int next_best_match_y = Match_y_next(best_match_y);
 	int avg_best_y = (best_match_y+next_best_match_y)/2;
 	
 	if ((X_line(x,y)) && (No_corner(x,y)))
@@ -386,12 +388,21 @@ int Match_tile_y(int x[],int y[])
 	return coord_y;
 }
 
+
+
+
 void Update_map(int x[],int y[])
 {
+	avg_x_per_sample = avg_array(x,window_size);
+	avg_y_per_sample = avg_array(y,window_size);
+	
 	int x_tile_rob=Match_tile_x(x,y);
 	int y_tile_rob=Match_tile_y(x,y);
 	
-	if((x_tile_rob!=3)||(y_tile_rob!=3)||(x_tile_rob!=2)||(y_tile_rob!=2)||(x_tile_rob!=1)||(y_tile_rob!=1))
+	
+	
+	
+	if((x_tile_rob!=3)&&(y_tile_rob!=3)&&(x_tile_rob!=2)&&(y_tile_rob!=2)&&(x_tile_rob!=1)&&(y_tile_rob!=1))
 	{
 		int x_tile_glob=Convert_rob_loc_map_glob_x(x_tile_rob);
 		int y_tile_glob=Convert_rob_loc_map_glob_y(y_tile_rob);
@@ -403,13 +414,16 @@ void Update_map(int x[],int y[])
 		if(current_tile_value == 0)
 		{
 			newVal = 5;
+			Set_tile(x_tile_glob, y_tile_glob, newVal);
 		}
-		else if(current_tile_value < 255 && current_tile_value != 1)
+
+		else if(current_tile_value < 255 && current_tile_value != 1 && current_tile_value != 2)
 		{
 			newVal = current_tile_value + 1;
+		    Set_tile(x_tile_glob, y_tile_glob, newVal);
 		}
+
 		
-		
-		Set_tile(x_tile_glob, y_tile_glob, newVal);	
+
 	}
 }

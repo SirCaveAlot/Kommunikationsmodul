@@ -29,6 +29,13 @@
 volatile bool right_side_detected;
 volatile bool left_side_detected;
 
+
+int size = 4000;
+int array_x[10];
+int array_y[10];
+
+
+
 void Set_robot_position(int16_t xpos, int16_t ypos)
 {
 	robot_pos.x = xpos;
@@ -167,12 +174,11 @@ void Left_side_detectable(uint8_t IR_data)
 }
 
 void Set_tile_from_ir()
-{
-	/*if((((robot_pos.x % 40) < 10) || ((robot_pos.x % 40) > 30)) && (((robot_pos.y % 40) < 10)  || ((robot_pos.y % 40) > 30))) // Return if robot in between two tiles
-	{
-		return;
-	}*/
+if(((robot_pos.x % 40) < 10) /*|| ((robot_pos.x % 40) > 30))*/ && ((robot_pos.y % 40) < 10)/*  || ((robot_pos.y % 40) > 30)*/) // Return if robot in between two tiles
 	
+{
+		return;
+	}
 	uint8_t x_tile_robot = Get_robot_tile_x();
 	uint8_t y_tile_robot = Get_robot_tile_y();
 	uint8_t direction_tile_robot = Get_robot_direction();
@@ -347,14 +353,12 @@ void Test_values(){}
 */
 
 /*#define increase 90*/
-int size = 4000;
+
 // double rcv_radius[5] = {28.28,24,20,24,35.28};
 // double rcv_theta[5] = {315,345,0,15,45};
 
 // double x_coordinates[5];
 // double y_coordinates[5];
-int array_x[10];
-int array_y[10];
 
 // void DegreeToRadian(uint8_t array[])
 // {
@@ -396,7 +400,7 @@ void Window ()
 	//Tar ut ett fönster på ett visst antal element och gör en vekotr av dem
 	uint16_t vector_position = 0;
 	// Om det finns mindre plats än window_size, ta bar ett fönster de element som finns kvar
-	for(int index = 0; index < size + 1 - window_size; index = index + 2)
+	for(int index = 0; index < size + 1 - window_size; index = index + 4)
 	{
 		for(int i = 0; i < 2 * window_size; i++)
 		{

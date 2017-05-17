@@ -80,24 +80,29 @@ void Simulation()
 // 		Movement_Queue_Put(90);
 // 		Movement_Queue_Put('f');
 // 		Movement_Queue_Put(2);
-		
-		Movement_Queue_Put('f');
-		Movement_Queue_Put(3);
-		Movement_Queue_Put('l');
-		Movement_Queue_Put(90);
-		Movement_Queue_Put('f');
-		Movement_Queue_Put(3);
-		Movement_Queue_Put('l');
-		Movement_Queue_Put(90);
-		Movement_Queue_Put('f');
-		Movement_Queue_Put(3);
-		Movement_Queue_Put('l');
-		Movement_Queue_Put(90);
-		Movement_Queue_Put('f');
-		Movement_Queue_Put(3);
-		Movement_Queue_Put('l');
-		Movement_Queue_Put(90);
+
 		Movement_Queue_Put('L');
+		/*
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(90);
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(90);
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(90);
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(3);
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(90);
+*/
+//		Movement_Queue_Put('L');
+
+
 				
 // 		Movement_Queue_Put('b');
 // 		Movement_Queue_Put(3);
