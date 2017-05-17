@@ -174,9 +174,9 @@ void Left_side_detectable(uint8_t IR_data)
 }
 
 void Set_tile_from_ir()
-if(((robot_pos.x % 40) < 10) /*|| ((robot_pos.x % 40) > 30))*/ && ((robot_pos.y % 40) < 10)/*  || ((robot_pos.y % 40) > 30)*/) // Return if robot in between two tiles
-	
 {
+    if(((robot_pos.x % 40) < 10)  && ((robot_pos.y % 40) < 10))
+	{
 		return;
 	}
 	uint8_t x_tile_robot = Get_robot_tile_x();
