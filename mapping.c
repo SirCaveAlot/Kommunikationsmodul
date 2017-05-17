@@ -183,7 +183,7 @@ void Set_tile_from_ir()
 	uint8_t y_tile_robot = Get_robot_tile_y();
 	uint8_t direction_tile_robot = Get_robot_direction();
 	
-	if(direction_tile_robot == 8) // direction up
+	if(direction_tile_robot == 8) //direction up
 	{
 		if(left_side_detected)
 		{
