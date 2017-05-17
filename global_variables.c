@@ -26,6 +26,8 @@ bool auto_control = false;
 bool running = false;
 bool mode_changed = false;
 
+uint8_t competition_mode = 0;
+
 coordinates robot_pos;
 
 volatile uint8_t distance_array[4000];

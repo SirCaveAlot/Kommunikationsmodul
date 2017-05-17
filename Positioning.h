@@ -12,13 +12,21 @@ extern int8_t xpos;
 extern int8_t ypos;
 extern int8_t direction;
 
-void robot_set_direction(int8_t next_direction);
+void Robot_turn_right();
 
-void robot_turn_right();
+void Robot_turn_left();
 
-void robot_turn_left();
+void Robot_turn_around();
 
-void robot_turn_around();
+void Robot_set_direction(uint8_t next_direction);
+
+void set_direction(int8_t next_direction);
+
+void turn_right();
+
+void turn_left();
+
+void turn_around();
 
 int8_t next_y_position(int8_t next_direction);
 

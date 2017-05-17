@@ -28,6 +28,7 @@
 
 volatile bool right_side_detected;
 volatile bool left_side_detected;
+volatile bool forward_IR_detected;
 
 
 int size = 4000;

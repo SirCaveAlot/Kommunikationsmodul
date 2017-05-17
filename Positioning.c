@@ -9,7 +9,9 @@
 #include <avr/io.h>
 #include <stdbool.h>
 #include <string.h>
+#include "Positioning.h"
 #include "SearchAndFind.h"
+#include "mapping.h"
 
 #define up 8
 #define down 2
@@ -20,72 +22,137 @@ int8_t xpos;
 int8_t ypos;
 int8_t direction;
 
+void Robot_turn_right()
+{
+	if(Get_robot_direction() == up)
+	{
+		Robot_set_direction(right);
+	}
+	else if(Get_robot_direction() == right)
+	{
+		Robot_set_direction(down);
+	}
+	else if(Get_robot_direction() == down)
+	{
+		Robot_set_direction(left);
+	}
+	else if(Get_robot_direction() == left)
+	{
+		Robot_set_direction(up);
+	}
+}
+
+//always turning left in relation to where it's heading
+void Robot_turn_left()
+{
+	if(Get_robot_direction() ==  up)
+	{
+		Robot_set_direction(left);
+	}
+	else if(Get_robot_direction() == right)
+	{
+		Robot_set_direction(up);
+	}
+	else if(Get_robot_direction() == down)
+	{
+		Robot_set_direction(right);
+	}
+	else if(Get_robot_direction() == left)
+	{
+		Robot_set_direction(down);
+	}
+}
+
+void Robot_turn_around()
+{
+	if(Get_robot_direction() == up)
+	{
+		Robot_set_direction(down);
+	}
+	else if(Get_robot_direction() == right)
+	{
+		Robot_set_direction(left);
+	}
+	else if(Get_robot_direction() == down)
+	{
+		Robot_set_direction(up);
+	}
+	else if(Get_robot_direction() == left)
+	{
+		Robot_set_direction(right);
+	}
+}
+
+void Robot_set_direction(uint8_t next_direction)
+{
+	Set_robot_angle_direction(next_direction);
+}
 
 //changing robot direction to given direction
-void robot_set_direction(int8_t next_direction)
+void set_direction(int8_t next_direction)
 {
 	direction = next_direction;
 }
 
 //always turning right in relation to where it's heading
-void robot_turn_right()
+void turn_right()
 {
 	if(direction == up)
 	{
-		robot_set_direction(right);
+		set_direction(right);
 	}
 	else if(direction == right)
 	{
-		robot_set_direction(down);
+		set_direction(down);
 	}
 	else if(direction == down)
 	{
-		robot_set_direction(left);
+		set_direction(left);
 	}
 	else if(direction == left)
 	{
-		robot_set_direction(up);
+		set_direction(up);
 	}
 }
 
 //always turning left in relation to where it's heading
-void robot_turn_left()
+void turn_left()
 {
 	if(direction ==  up)
 	{
-		robot_set_direction(left);
+		set_direction(left);
 	}
 	else if(direction == right)
 	{
-		robot_set_direction(up);
+		set_direction(up);
 	}
 	else if(direction == down)
 	{
-		robot_set_direction(right);
+		set_direction(right);
 	}
 	else if(direction == left)
 	{
-		robot_set_direction(down);
+		set_direction(down);
 	}
 }
 
-void robot_turn_around()
+void turn_around()
 {
 	if(direction ==  up)
 	{
-		robot_set_direction(down);
+		set_direction(down);
 	}
 	else if(direction == right)
 	{
-		robot_set_direction(left);
+		set_direction(left);
 	}
 	else if(direction == down)
 	{
-		robot_set_direction(up);
+		set_direction(up);
 	}
 	else if(direction == left)
 	{
-		robot_set_direction(right);
+		set_direction(right);
 	}
 }
 

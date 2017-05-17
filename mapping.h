@@ -23,6 +23,7 @@ void Set_peepz_in_da_needz();
 
 volatile extern bool right_side_detected;
 volatile extern bool left_side_detected;
+volatile extern bool forward_IR_detected;
 
 
 

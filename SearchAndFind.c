@@ -17,68 +17,13 @@
 #include "Positioning.h"
 #include "mapping.h"
 #include "global_variables.h"
+#include "Movement.h"
+#include "UART.h"
+
+uint8_t robot_array[29][29];
+
+uint8_t undiscovered_tiles_array[29][29];
 //always turning right in relation to where it's heading
-
-void robot_turn_right()
-{
-	if(Get_robot_direction() == up)
-	{
-		Set_robot_angle_direction(right);
-	}
-	else if(Get_robot_direction() == right)
-	{
-		Set_robot_angle_direction(down);
-	}
-	else if(Get_robot_direction() == down)
-	{
-		Set_robot_angle_direction(left);
-	}
-	else if(Get_robot_direction() == left)
-	{
-		Set_robot_angle_direction(up);
-	}
-}
-
-//always turning left in relation to where it's heading
-void robot_turn_left()
-{
-	if(Get_robot_direction() ==  up)
-	{
-		Set_robot_angle_direction(left);
-	}
-	else if(Get_robot_direction() == right)
-	{
-		Set_robot_angle_direction(up);
-	}
-	else if(Get_robot_direction() == down)
-	{
-		Set_robot_angle_direction(right);
-	}
-	else if(Get_robot_direction() == left)
-	{
-		Set_robot_angle_direction(down);
-	}
-}
-
-void robot_turn_around()
-{
-	if(Get_robot_direction() ==  up)
-	{
-		Set_robot_angle_direction(down);
-	}
-	else if(Get_robot_direction() == right)
-	{
-		Set_robot_angle_direction(left);
-	}
-	else if(Get_robot_direction() == down)
-	{
-		Set_robot_angle_direction(up);
-	}
-	else if(Get_robot_direction() == left)
-	{
-		Set_robot_angle_direction(right);
-	}
-}
 
 // void nearest_path_to_array() //takes the coordinates from gurras_array and puts it in nearest_path_array[29][29]
 // {
@@ -98,7 +43,7 @@ bool back_at_start(int yposition,int xposition)
 {
 	if(map_array[yposition][xposition] == 3)
 	{
-		robot_turn_around(); //turn around (assuming start position was up)
+		turn_around(); //turn around (assuming start position was up)
 		return true; // right-lap is finished
 	}
 	else
@@ -185,10 +130,10 @@ void set_coordinate_in_array(int y, int x, int value) //sets coordinate in array
 	robot_array[y][x] = value;
 }
 
-void set_coordinate_in_NP_array(int y, int x, int value) //sets coordinate in nearest_path_array to value
-{
-	nearest_path_array[y][x] = value;
-}
+// void set_coordinate_in_NP_array(int y, int x, int value) //sets coordinate in nearest_path_array to value
+// {
+// 	nearest_path_array[y][x] = value;
+// }
 
 //As long as we don't find a wall ahead or a clear at the right hand side, the robot keeps moving forward
 //BUT! if we first off, find a clear way to travel to the right, we turn right and if we find a wall we
@@ -201,116 +146,127 @@ void robot_keep_right()
 		{
 			if(!forward_IR_detected && !left_side_detected && right_side_detected) //as long as we have wall to the right
 			{
-				// Send 'f' and 15 to movement queue
+				Movement_Queue_Put('f');
+				Movement_Queue_Put(15);
 			}
 			else if(forward_IR_detected && !left_side_detected && right_side_detected)
 			{
-				// Send 'l' and 90 to movement queue
+				Movement_Queue_Put('l');
+				Movement_Queue_Put(90);
 			}
 			else if(left_side_detected && right_side_detected)
 			{
-				// Send 'l' and 180 to movement queue, then send 'f' and 15
+				Movement_Queue_Put('l');
+				Movement_Queue_Put(180);
+				Movement_Queue_Put('f');
+				Movement_Queue_Put(15);
 			}
 			else if(!right_side_detected)
 			{
-				//Send 'r' and 90 to movement queue, then send 'f' and 15
+				Movement_Queue_Put('L');
+				Movement_Queue_Put('r');
+				Movement_Queue_Put(90);
+				Movement_Queue_Put('f');
+				Movement_Queue_Put(15);
 			}
 		}
 	}
 	else
 	{
-		robot_detect_outer_walls(); // THIS NEEDS TO BE RUN WITHOUT ACTUALLY CHANGING ROBOTS POSITION
+		//robot_detect_outer_walls(); // THIS NEEDS TO BE RUN WITHOUT ACTUALLY CHANGING ROBOTS POSITION
+		competition_mode = 2;
+		USART_Transmit('C', 0);
 	}
 }
 
-bool drive_nearest_path() //follows given path from gurras_array
-{
-	if(detect_path(next_y_position(direction), next_x_position(direction), 3))
-	{
-		set_coordinate_in_NP_array(ypos, xpos, 1); // if robot move is outside of while loop in main function, setting coordinate
-		robot_move();							   // here will save STARTING and end POSITION as 3 and set rest of path to 1.
-		return false;
-		
-	}
-	else if(detect_path(right_y_pos(), right_x_pos(), 3))
-	{
-		set_coordinate_in_NP_array(ypos, xpos, 1);
-		robot_turn_right();
-		return false;
-	}
-	else if(detect_path(left_y_pos(), left_x_pos(), 3))
-	{
-		set_coordinate_in_NP_array(ypos, xpos, 1);
-		robot_turn_left();
-		return false;
-	}
-	else
-	{
-		finished_with_drive_nearest_path = true;
-		return true;
-	}
+// bool drive_nearest_path() //follows given path from gurras_array
+// {
+// 	if(detect_path(next_y_position(direction), next_x_position(direction), 3))
+// 	{
+// 		set_coordinate_in_NP_array(ypos, xpos, 1); // if robot move is outside of while loop in main function, setting coordinate
+// 		robot_move();							   // here will save STARTING and end POSITION as 3 and set rest of path to 1.
+// 		return false;
+// 		
+// 	}
+// 	else if(detect_path(right_y_pos(), right_x_pos(), 3))
+// 	{
+// 		set_coordinate_in_NP_array(ypos, xpos, 1);
+// 		robot_turn_right();
+// 		return false;
+// 	}
+// 	else if(detect_path(left_y_pos(), left_x_pos(), 3))
+// 	{
+// 		set_coordinate_in_NP_array(ypos, xpos, 1);
+// 		robot_turn_left();
+// 		return false;
+// 	}
+// 	else
+// 	{
+// 		finished_with_drive_nearest_path = true;
+// 		return true;
+// 	}
+// 
+// }
 
-}
 
-
-bool drive_back_nearest_path() //drives the same way back, drives_nearest_path need to be finished when starting this function
-{
-	if(detect_path(next_y_position(direction), next_x_position(direction), 1))
-	{
-		set_coordinate_in_NP_array(ypos, xpos, 2);
-		robot_move();
-		return false;
-		
-	}
-	else if(detect_path(right_y_pos(), right_x_pos(), 1))
-	{
-		set_coordinate_in_NP_array(ypos, xpos, 2);
-		robot_turn_right();
-		return false;
-	}
-	else if(detect_path(left_y_pos(), left_x_pos(), 1))
-	{
-		set_coordinate_in_NP_array(ypos, xpos, 2);
-		robot_turn_left();
-		return false;
-	}
-	else if(detect_path(back_y_pos(), back_x_pos(), 1))
-	{
-		set_coordinate_in_NP_array(ypos, xpos, 2);
-		robot_turn_right();
-		robot_turn_right();
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-
-}
-
-void drive_to_distressed_and_return()
-{
-	if(finished_with_drive_nearest_path)
-	{
-		//leave something for distressed
-		drive_back_nearest_path();
-	}
-	else
-	{
-		drive_nearest_path();
-	}
-}
+// bool drive_back_nearest_path() //drives the same way back, drives_nearest_path need to be finished when starting this function
+// {
+// 	if(detect_path(next_y_position(direction), next_x_position(direction), 1))
+// 	{
+// 		set_coordinate_in_NP_array(ypos, xpos, 2);
+// 		robot_move();
+// 		return false;
+// 		
+// 	}
+// 	else if(detect_path(right_y_pos(), right_x_pos(), 1))
+// 	{
+// 		set_coordinate_in_NP_array(ypos, xpos, 2);
+// 		robot_turn_right();
+// 		return false;
+// 	}
+// 	else if(detect_path(left_y_pos(), left_x_pos(), 1))
+// 	{
+// 		set_coordinate_in_NP_array(ypos, xpos, 2);
+// 		robot_turn_left();
+// 		return false;
+// 	}
+// 	else if(detect_path(back_y_pos(), back_x_pos(), 1))
+// 	{
+// 		set_coordinate_in_NP_array(ypos, xpos, 2);
+// 		robot_turn_right();
+// 		robot_turn_right();
+// 		return false;
+// 	}
+// 	else
+// 	{
+// 		return true;
+// 	}
+// 
+// }
+// 
+// void drive_to_distressed_and_return()
+// {
+// 	if(finished_with_drive_nearest_path)
+// 	{
+// 		//leave something for distressed
+// 		drive_back_nearest_path();
+// 	}
+// 	else
+// 	{
+// 		drive_nearest_path();
+// 	}
+// }
 
 void robot_detect_outer_walls()
 {
-	robot_turn_left();
+	turn_left();
 	robot_move();
 	while (map_array[next_y_position(direction)][next_x_position(direction)] != 4)
 	{
 		save_detected_outer_wall_in_array(ypos, xpos);
 		if(detect_outer_wall(right_y_pos(), right_x_pos()))
 		{
-			robot_turn_right();
+			turn_right();
 			robot_move();
 		}
 		else if(detect_outer_wall(next_y_position(direction), next_x_position(direction)))
@@ -319,25 +275,25 @@ void robot_detect_outer_walls()
 		}
 		else if(detect_outer_wall(left_y_pos(), left_x_pos()))
 		{
-			robot_turn_left();
+			turn_left();
 		}
 		else if(detect_outer_wall(forward_to_left_y_pos(), forward_to_left_x_pos()))
 		{
 			robot_move();
-			robot_turn_left();
+			turn_left();
 			robot_move();
 			save_detected_outer_wall_in_array(ypos, xpos);
-			robot_turn_around();
+			turn_around();
 			if(detect_outer_wall(forward_to_left_y_pos(), forward_to_left_x_pos()))
 			{
 				robot_move();
-				robot_turn_left();
+				turn_left();
 				robot_move();
 				save_detected_outer_wall_in_array(ypos, xpos);
 			}
 			else
 			{
-				robot_turn_around();
+				turn_around();
 			}
 			
 		}
