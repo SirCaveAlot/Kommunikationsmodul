@@ -28,7 +28,7 @@
 
 volatile bool right_side_detected;
 volatile bool left_side_detected;
-volatile bool forward_IR_detected;
+volatile bool front_side_detected;
 
 
 int size = 4000;
@@ -174,9 +174,22 @@ void Left_side_detectable(uint8_t IR_data)
 	}
 }
 
+void Front_side_detectable(uint8_t IR_data)
+{
+	if(IR_data >= 45)
+	{
+		front_side_detected = true;
+	}
+	else
+	{
+		front_side_detected = false;
+	}
+}
+
 void Set_tile_from_ir()
 {
-    if(((robot_pos.x % 40) < 10)  && ((robot_pos.y % 40) < 10))
+	if((((robot_pos.x/10 % 40) > 10) && ((robot_pos.x/10 % 40) < 30))  ||
+	(((robot_pos.y/10 % 40) > 10) && ((robot_pos.y/10 % 40) < 30)))
 	{
 		return;
 	}
@@ -202,6 +215,17 @@ void Set_tile_from_ir()
 		{
 			Set_tile(x_tile_robot + 1, y_tile_robot, 1); // Check tile value. Open tile
 		}
+		
+		if(front_side_detected)
+		{
+			Set_tile(x_tile_robot, y_tile_robot - 1, 255); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot, y_tile_robot - 1, 1); // Check tile value. Open tile
+		}
+		
+		
 	}
 	
 	else if(direction_tile_robot == 6) // direction right
@@ -222,6 +246,17 @@ void Set_tile_from_ir()
 		{
 			Set_tile(x_tile_robot, y_tile_robot + 1, 1); // Check tile value. Open tile
 		}
+		
+		if(front_side_detected)
+		{
+			Set_tile(x_tile_robot + 1, y_tile_robot, 255); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot + 1, y_tile_robot, 1); // Check tile value. Open tile
+		}
+		
+		
 	}
 	
 	else if(direction_tile_robot == 2) // direction down
@@ -242,6 +277,17 @@ void Set_tile_from_ir()
 		{
 			Set_tile(x_tile_robot - 1, y_tile_robot, 1); // Check tile value. Open tile
 		}
+		
+		if(front_side_detected)
+		{
+			Set_tile(x_tile_robot, y_tile_robot + 1, 255); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot, y_tile_robot + 1, 1); // Check tile value. Open tile
+		}
+		
+		
 	}
 	
 	else if(direction_tile_robot == 4) // direction left
@@ -262,8 +308,20 @@ void Set_tile_from_ir()
 		{
 			Set_tile(x_tile_robot, y_tile_robot - 1, 1); // Check tile value. Open tile
 		}
+		
+		if(front_side_detected)
+		{
+			Set_tile(x_tile_robot - 1, y_tile_robot, 255); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot - 1, y_tile_robot, 1); // Check tile value. Open tile
+		}
+		
+		
 	}
 }
+
 
 void Set_peepz_in_da_needz()
 {

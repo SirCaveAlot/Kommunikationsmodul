@@ -142,14 +142,14 @@ void robot_keep_right()
 {
 	if(!back_at_start(ypos, xpos))
 	{
-		if(!running)
+		if(!running && Movement_queue_empty())
 		{
-			if(!forward_IR_detected && !left_side_detected && right_side_detected) //as long as we have wall to the right
+			if(!front_side_detected && !left_side_detected && right_side_detected) //as long as we have wall to the right
 			{
 				Movement_Queue_Put('f');
 				Movement_Queue_Put(15);
 			}
-			else if(forward_IR_detected && !left_side_detected && right_side_detected)
+			else if(front_side_detected && !left_side_detected && right_side_detected)
 			{
 				Movement_Queue_Put('l');
 				Movement_Queue_Put(90);
@@ -163,7 +163,7 @@ void robot_keep_right()
 			}
 			else if(!right_side_detected)
 			{
-				Movement_Queue_Put('L');
+				//Movement_Queue_Put('L');
 				Movement_Queue_Put('r');
 				Movement_Queue_Put(90);
 				Movement_Queue_Put('f');

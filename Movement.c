@@ -10,7 +10,7 @@
 #include <stdbool.h>
 
 /* Queue structure */
-#define MOVEMENT_QUEUE_ELEMENTS 20
+#define MOVEMENT_QUEUE_ELEMENTS 50
 #define MOVEMENT_QUEUE_SIZE (MOVEMENT_QUEUE_ELEMENTS + 1)
 uint8_t Movement_Queue[MOVEMENT_QUEUE_SIZE];
 int Movement_Queue_In, Movement_Queue_Out;

@@ -24,11 +24,8 @@ void Set_peepz_in_da_needz();
 
 volatile extern bool right_side_detected;
 volatile extern bool left_side_detected;
-<<<<<<< HEAD
-volatile extern bool forward_IR_detected;
-=======
 volatile extern bool front_side_detected;
->>>>>>> optimizing
+
 
 
 

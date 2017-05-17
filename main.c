@@ -137,6 +137,7 @@ int main(void)
     {
 		if(competition_mode == 1)
 		{
+			//PORTA = competition_mode;
 			robot_keep_right();
 		}
 		else if(competition_mode == 2)
@@ -147,6 +148,7 @@ int main(void)
 		{
 			// Shortest path algorithm
 		}
+		
 		if(mode == 'S')
 		{
 			Window();
@@ -190,15 +192,17 @@ int main(void)
 				// Gustav start
 				
 				case 'C':
-				if(competition_mode == 2)
-				{
-					competition_mode = 3;
-					USART_Transmit('C', 0);
-				}
-				else
-				{
-					competition_mode = 1;
-				}
+// 				if(competition_mode == 2)
+// 				{
+// 					competition_mode = 3;
+// 					USART_Transmit('C', 0);
+// 				}
+// 				else
+// 				{
+				competition_mode = 1;
+				Movement_Queue_Put('f');
+				Movement_Queue_Put(15);
+				
 				break;
 				
 				case 'f':
@@ -268,20 +272,20 @@ int main(void)
 		}
 		
 		if (!Movement_queue_empty() && mode == 'D')
-		{
+		{		
 			if(auto_control)
 			{
 				if (running == false)
 				{
 					Movement_Queue_Get(&next_movement);
-					
+					PORTA = next_movement;
 					if(next_movement == 'L')
 					{
 						mode_changed = true;
 						running = true;
 					}
 					USART_Transmit(0, 0);
-					if(next_movement == 'A' || next_movement == 'L' || next_movement == 's' || next_movement == 'S')
+					if(next_movement == 'A' || next_movement == 'L' || next_movement == 's' || next_movement == 'S' || next_movement == 'C')
 					{
 						USART_Transmit(next_movement, 0);
 						USART_Transmit(0, 0);
