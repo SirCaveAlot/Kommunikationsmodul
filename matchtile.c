@@ -416,10 +416,14 @@ void Update_map(int x[],int y[])
 			newVal = 5;
 			Set_tile(x_tile_glob, y_tile_glob, newVal);
 		}
+
 		else if(current_tile_value < 255 && current_tile_value != 1 && current_tile_value != 2)
 		{
 			newVal = current_tile_value + 1;
 		    Set_tile(x_tile_glob, y_tile_glob, newVal);
 		}
+
+		
+
 	}
 }

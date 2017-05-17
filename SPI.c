@@ -139,7 +139,8 @@ void Dequeue_SPI_queue_D_mode()
 	{
 		uint8_t last_byte = 0;
 		if(mode == 'D')
-		{
+		{	
+			
 			SPI_queue_get(&last_byte);
 			USART_Transmit(last_byte, 1);
 			SPI_queue_get(&last_byte);
@@ -163,14 +164,19 @@ void Dequeue_SPI_queue_D_mode()
 			
 			SPI_queue_get(&distance_traveled);
 			distance_traveled = Wheelshifts_to_distance(distance_traveled);
-			//USART_Transmit(distance_traveled, 1);
 			distance_traveled = (distance_traveled + Wheelshifts_to_distance(SPI_queue_peek(SPI_queue_out))) / 2;
-			USART_Transmit(distance_traveled, 1);
 			SPI_queue_remove();
-			if (running == true && (last_movement == 'f' || last_movement == 'b'))
+			if ((!auto_control || running == true) && (last_movement == 'f' || last_movement == 'b'))
 			{
 				update_robot_position(distance_traveled);
 			}
+			
+			Set_tile_from_ir();
+			
+			USART_Transmit((uint8_t)(robot_pos.x >> 8), 1);
+			USART_Transmit((uint8_t)(robot_pos.x), 1);
+			USART_Transmit((uint8_t)(robot_pos.y >> 8), 1);
+			USART_Transmit((uint8_t)(robot_pos.y), 1);
 			
 			distance_traveled = 0;
 
@@ -193,7 +199,7 @@ void Dequeue_SPI_queue_D_mode()
 			}
 			USART_Transmit(mode, 1);
 			
-			Set_tile_from_ir();
+			
 			dequeue = false;
 		}
 	}

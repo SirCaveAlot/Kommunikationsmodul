@@ -29,9 +29,11 @@
 volatile bool right_side_detected;
 volatile bool left_side_detected;
 
+
 int size = 4000;
 int array_x[10];
 int array_y[10];
+
 
 
 void Set_robot_position(int16_t xpos, int16_t ypos)
@@ -172,12 +174,11 @@ void Left_side_detectable(uint8_t IR_data)
 }
 
 void Set_tile_from_ir()
+if(((robot_pos.x % 40) < 10) /*|| ((robot_pos.x % 40) > 30))*/ && ((robot_pos.y % 40) < 10)/*  || ((robot_pos.y % 40) > 30)*/) // Return if robot in between two tiles
+	
 {
-	if(((robot_pos.x % 40) < 10) /*|| ((robot_pos.x % 40) > 30))*/ && ((robot_pos.y % 40) < 10)/*  || ((robot_pos.y % 40) > 30)*/) // Return if robot in between two tiles
-	{
 		return;
 	}
-	
 	uint8_t x_tile_robot = Get_robot_tile_x();
 	uint8_t y_tile_robot = Get_robot_tile_y();
 	uint8_t direction_tile_robot = Get_robot_direction();
