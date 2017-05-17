@@ -28,6 +28,7 @@
 
 volatile bool right_side_detected;
 volatile bool left_side_detected;
+volatile bool front_side_detected;
 
 
 int size = 4000;
@@ -173,9 +174,23 @@ void Left_side_detectable(uint8_t IR_data)
 	}
 }
 
+void Front_side_detectable(uint8_t IR_data)
+{
+	if(IR_data >= 45)
+	{
+		front_side_detected = true;
+	}
+	else
+	{
+		front_side_detected = false;
+	}
+}
+
+
 void Set_tile_from_ir()
 {
-    if(((robot_pos.x % 40) < 10)  && ((robot_pos.y % 40) < 10))
+    if((((robot_pos.x/10 % 40) > 10) && ((robot_pos.x/10 % 40) < 30))  ||
+	   (((robot_pos.y/10 % 40) > 10) && ((robot_pos.y/10 % 40) < 30)))
 	{
 		return;
 	}
@@ -201,6 +216,17 @@ void Set_tile_from_ir()
 		{
 			Set_tile(x_tile_robot + 1, y_tile_robot, 1); // Check tile value. Open tile
 		}
+		
+		if(front_side_detected)
+		{
+			Set_tile(x_tile_robot, y_tile_robot - 1, 255); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot, y_tile_robot - 1, 1); // Check tile value. Open tile
+		}
+		
+		
 	}
 	
 	else if(direction_tile_robot == 6) // direction right
@@ -221,6 +247,17 @@ void Set_tile_from_ir()
 		{
 			Set_tile(x_tile_robot, y_tile_robot + 1, 1); // Check tile value. Open tile
 		}
+		
+		if(front_side_detected)
+		{
+			Set_tile(x_tile_robot + 1, y_tile_robot, 255); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot + 1, y_tile_robot, 1); // Check tile value. Open tile
+		}
+			
+		
 	}
 	
 	else if(direction_tile_robot == 2) // direction down
@@ -241,6 +278,17 @@ void Set_tile_from_ir()
 		{
 			Set_tile(x_tile_robot - 1, y_tile_robot, 1); // Check tile value. Open tile
 		}
+		
+		if(front_side_detected)
+		{
+			Set_tile(x_tile_robot, y_tile_robot + 1, 255); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot, y_tile_robot + 1, 1); // Check tile value. Open tile
+		}
+			
+		
 	}
 	
 	else if(direction_tile_robot == 4) // direction left
@@ -261,6 +309,17 @@ void Set_tile_from_ir()
 		{
 			Set_tile(x_tile_robot, y_tile_robot - 1, 1); // Check tile value. Open tile
 		}
+		
+		if(front_side_detected)
+		{
+			Set_tile(x_tile_robot - 1, y_tile_robot, 255); // Check tile value. Wall tile
+		}
+		else
+		{
+			Set_tile(x_tile_robot - 1, y_tile_robot, 1); // Check tile value. Open tile
+		}
+		
+		
 	}
 }
 
@@ -400,7 +459,7 @@ void Window ()
 	//Tar ut ett fönster på ett visst antal element och gör en vekotr av dem
 	uint16_t vector_position = 0;
 	// Om det finns mindre plats än window_size, ta bar ett fönster de element som finns kvar
-	for(int index = 0; index < size + 1 - window_size; index = index + 4)
+	for(int index = 0; index < size - window_size; index = index + 4)
 	{
 		for(int i = 0; i < 2 * window_size; i++)
 		{
@@ -408,9 +467,13 @@ void Window ()
 			if (i % 2 == 0)
 			{
 				array_x[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
-				(cos(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * marcus_to_radian + (M_PI / 2) - (robot_pos.angle))) + robot_pos.x/10;
+				(cos(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) *
+				 marcus_to_radian + (M_PI / 2) - (robot_pos.angle))) 
+				+ robot_pos.x/10;
 				array_y[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
-				(sin(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * marcus_to_radian + (M_PI / 2) - (robot_pos.angle))) + robot_pos.y/10;
+				(sin(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * 
+				marcus_to_radian + (M_PI / 2) - (robot_pos.angle)))
+				 + robot_pos.y/10;
 			}
 		}
 		
