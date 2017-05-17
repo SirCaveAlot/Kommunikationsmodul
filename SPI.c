@@ -192,6 +192,8 @@ void Dequeue_SPI_queue_D_mode()
 			
 			USART_Transmit(last_movement, 1);
 			USART_Transmit(Get_robot_direction(), 1);
+			USART_Transmit(Get_robot_tile_x(), 1);
+			USART_Transmit(Get_robot_tile_y(), 1);
 			if(mode_changed)
 			{
 				mode = 'L';
