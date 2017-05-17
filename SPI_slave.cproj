@@ -121,6 +121,12 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Adjacent_array.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Adjacent_array.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="global_variables.c">
       <SubType>compile</SubType>
     </Compile>
@@ -128,6 +134,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Main_array.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Main_array.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="mapping.c">
@@ -148,10 +160,22 @@
     <Compile Include="Movement.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Positioning.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Positioning.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="SearchAndFind.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="SearchAndFind.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ShortestPath.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ShortestPath.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="SPI.c">
