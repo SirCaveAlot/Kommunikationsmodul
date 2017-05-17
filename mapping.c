@@ -329,11 +329,11 @@ void Test_values(){}
  
 //------------------------------------Testcase 5 - (14,13) increase= 270 -funkar -----------------------------------------
   
-//------------------------------------Testcase 6 - en array på 20 element alla med (14,14), (14,13), (13,14), (14,15) -funkar -----------------------------------------
+//------------------------------------Testcase 6 - en array p 20 element alla med (14,14), (14,13), (13,14), (14,15) -funkar -----------------------------------------
 
-//------------------------------------Testcase 7- kollar att om vi har ett hörn så skapar vi ingen linje (ingen tile läggs till)  -----------------------------------------
+//------------------------------------Testcase 7- kollar att om vi har ett hrn skapar vi ingen linje (ingen tile lggs till)  -----------------------------------------
 
-//------------------------------------Testcase 8- kollar att om vi har ett hörn så skapar vi ingen linje (ingen tile läggs till)  -----------------------------------------
+//------------------------------------Testcase 8- kollar att om vi har ett hrn s skapar vi ingen linje (ingen tile lggs till)  -----------------------------------------
 
 #define increase 90
 int size= 20;
@@ -398,9 +398,9 @@ void Test_values(){}
 
 void Window ()
 {
-	//Tar ut ett fönster på ett visst antal element och gör en vekotr av dem
+	//Tar ut ett fnster p ett visst antal element och gr en vekotr av dem
 	uint16_t vector_position = 0;
-	// Om det finns mindre plats än window_size, ta bar ett fönster de element som finns kvar
+	// Om det finns mindre plats n window_size, ta bar ett fnster de element som finns kvar
 	for(int index = 0; index < size + 1 - window_size; index = index + 4)
 	{
 		for(int i = 0; i < 2 * window_size; i++)

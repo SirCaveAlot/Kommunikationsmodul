@@ -18,12 +18,17 @@ uint8_t Get_robot_tile_x();
 uint8_t Get_robot_tile_y();
 void Right_side_detectable(uint8_t IR_data);
 void Left_side_detectable(uint8_t IR_data);
+void Front_side_detectable(uint8_t IR_data);
 void Set_tile_from_ir();
 void Set_peepz_in_da_needz();
 
 volatile extern bool right_side_detected;
 volatile extern bool left_side_detected;
+<<<<<<< HEAD
 volatile extern bool forward_IR_detected;
+=======
+volatile extern bool front_side_detected;
+>>>>>>> optimizing
 
 
 
