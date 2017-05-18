@@ -92,7 +92,7 @@ uint8_t Wheelshifts_to_distance(uint8_t nr_of_wheel_shifts)
 // 	{
 // 		return -WHEEL_SLICE * nr_of_wheel_shifts;
 // 	}
-	return WHEEL_SLICE*nr_of_wheel_shifts;
+	return round(WHEEL_SLICE*nr_of_wheel_shifts);
 }
 
 void update_robot_position(uint16_t dist_traveled_mm)
@@ -113,7 +113,11 @@ void update_robot_position(uint16_t dist_traveled_mm)
 	{
 		robot_pos.x = robot_pos.x + dist_traveled_mm;
 	}
-	Set_tile(Get_robot_tile_x(), Get_robot_tile_y(), 1);
+	
+	robot_pos.x_tile = Get_robot_tile_x();
+	robot_pos.y_tile = Get_robot_tile_y();
+	
+	Set_tile(robot_pos.x_tile, robot_pos.y_tile, 1);
 }
 
 uint8_t Get_robot_tile_x()
@@ -194,36 +198,36 @@ void Set_tile_from_ir()
 	{
 		return;
 	}
-	uint8_t x_tile_robot = Get_robot_tile_x();
-	uint8_t y_tile_robot = Get_robot_tile_y();
+	
+	
 	uint8_t direction_tile_robot = Get_robot_direction();
 	
 	if(direction_tile_robot == 8) //direction up
 	{
 		if(left_side_detected)
 		{
-			Set_tile(x_tile_robot - 1, y_tile_robot, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile - 1, robot_pos.y_tile, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot - 1, y_tile_robot, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile - 1, robot_pos.y_tile, 1); // Check tile value. Open tile
 		}
 		if(right_side_detected)
 		{
-			Set_tile(x_tile_robot + 1, y_tile_robot, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile + 1, robot_pos.y_tile, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot + 1, y_tile_robot, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile + 1, robot_pos.y_tile, 1); // Check tile value. Open tile
 		}
 		
 		if(front_side_detected)
 		{
-			Set_tile(x_tile_robot, y_tile_robot - 1, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile - 1, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot, y_tile_robot - 1, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile - 1, 1); // Check tile value. Open tile
 		}
 		
 		
@@ -233,28 +237,28 @@ void Set_tile_from_ir()
 	{
 		if(left_side_detected)
 		{
-			Set_tile(x_tile_robot, y_tile_robot - 1, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile - 1, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot, y_tile_robot - 1, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile - 1, 1); // Check tile value. Open tile
 		}
 		if(right_side_detected)
 		{
-			Set_tile(x_tile_robot, y_tile_robot + 1, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile + 1, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot, y_tile_robot + 1, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile + 1, 1); // Check tile value. Open tile
 		}
 		
 		if(front_side_detected)
 		{
-			Set_tile(x_tile_robot + 1, y_tile_robot, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile + 1, robot_pos.y_tile, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot + 1, y_tile_robot, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile + 1, robot_pos.y_tile, 1); // Check tile value. Open tile
 		}
 			
 		
@@ -264,28 +268,28 @@ void Set_tile_from_ir()
 	{
 		if(left_side_detected)
 		{
-			Set_tile(x_tile_robot + 1, y_tile_robot, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile + 1, robot_pos.y_tile, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot + 1, y_tile_robot, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile + 1, robot_pos.y_tile, 1); // Check tile value. Open tile
 		}
 		if(right_side_detected)
 		{
-			Set_tile(x_tile_robot - 1, y_tile_robot, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile - 1, robot_pos.y_tile, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot - 1, y_tile_robot, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile - 1, robot_pos.y_tile, 1); // Check tile value. Open tile
 		}
 		
 		if(front_side_detected)
 		{
-			Set_tile(x_tile_robot, y_tile_robot + 1, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile + 1, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot, y_tile_robot + 1, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile + 1, 1); // Check tile value. Open tile
 		}
 			
 		
@@ -295,28 +299,28 @@ void Set_tile_from_ir()
 	{
 		if(left_side_detected)
 		{
-			Set_tile(x_tile_robot, y_tile_robot + 1, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile + 1, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot, y_tile_robot + 1, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile + 1, 1); // Check tile value. Open tile
 		}
 		if(right_side_detected)
 		{
-			Set_tile(x_tile_robot, y_tile_robot - 1, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile - 1, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot, y_tile_robot - 1, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile, robot_pos.y_tile - 1, 1); // Check tile value. Open tile
 		}
 		
 		if(front_side_detected)
 		{
-			Set_tile(x_tile_robot - 1, y_tile_robot, 255); // Check tile value. Wall tile
+			Set_tile(robot_pos.x_tile - 1, robot_pos.y_tile, 255); // Check tile value. Wall tile
 		}
 		else
 		{
-			Set_tile(x_tile_robot - 1, y_tile_robot, 1); // Check tile value. Open tile
+			Set_tile(robot_pos.x_tile - 1, robot_pos.y_tile, 1); // Check tile value. Open tile
 		}
 		
 		
@@ -329,8 +333,8 @@ void Set_peepz_in_da_needz()
 	uint8_t peep_x = robot_pos.x % 40;
 	uint8_t peep_y = robot_pos.y % 40;*/
 	
-	uint8_t peep_x = Get_robot_tile_x();
-	uint8_t peep_y = Get_robot_tile_y();
+	uint8_t peep_x = robot_pos.x_tile;
+	uint8_t peep_y = robot_pos.y_tile;
 	
 	if (Get_robot_direction() == 8)
 	{

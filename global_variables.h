@@ -36,6 +36,8 @@ typedef struct coordinates
 	int x;
 	int y;
 	float angle;
+	uint8_t x_tile;
+	uint8_t y_tile;
 }coordinates;
 
 extern coordinates robot_pos;

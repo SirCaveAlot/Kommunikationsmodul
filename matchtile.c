@@ -301,7 +301,10 @@ int Match_tile_x(int x[],int y[])
 	int next_best_match_x = Match_x_next(bestmatch_x);
 	int avg_best_x = (bestmatch_x+next_best_match_x)/2;
 	
-	if ((X_line(x,y)) && (No_corner(x,y)))
+	bool x_line = X_line(x,y);
+	bool no_corner = No_corner(x,y);
+	
+	if ( x_line && no_corner)
 	{
 		//Put tile on the correct side of the detected line
 		if(robot_pos.x/10<bestmatch_x)
@@ -317,7 +320,7 @@ int Match_tile_x(int x[],int y[])
 			return 1; //Shouldn't happen #1
 		}
 	}
-	else if((!X_line(x,y)) && (No_corner(x,y)))
+	else if(!x_line && no_corner)
 	{
 		if(avg_best_x > bestmatch_x)
 		{
@@ -349,7 +352,12 @@ int Match_tile_y(int x[],int y[])
 	int next_best_match_y = Match_y_next(best_match_y);
 	int avg_best_y = (best_match_y+next_best_match_y)/2;
 	
-	if ((X_line(x,y)) && (No_corner(x,y)))
+	bool x_line = X_line(x,y);
+	bool no_corner = No_corner(x,y);
+	
+	
+	
+	if(x_line && no_corner)
 	{
 		//Put tile on the correct side of the detected line
 		if(avg_best_y > best_match_y)
@@ -365,7 +373,7 @@ int Match_tile_y(int x[],int y[])
 			return 2; //Shouldn't happen #2
 		}
 	}
-	else if((!X_line(x,y)) && (No_corner(x,y)))
+	else if(!x_line && no_corner)
 	{
 		if(robot_pos.y/10<best_match_y)
 		{
@@ -404,26 +412,43 @@ void Update_map(int x[],int y[])
 	
 	if((x_tile_rob!=3)&&(y_tile_rob!=3)&&(x_tile_rob!=2)&&(y_tile_rob!=2)&&(x_tile_rob!=1)&&(y_tile_rob!=1))
 	{
-		int x_tile_glob=Convert_rob_loc_map_glob_x(x_tile_rob);
-		int y_tile_glob=Convert_rob_loc_map_glob_y(y_tile_rob);
+		int16_t x_tile_glob=Convert_rob_loc_map_glob_x(x_tile_rob);
+		int16_t y_tile_glob=Convert_rob_loc_map_glob_y(y_tile_rob);
 		int newVal = 0;
 		
 		//Add +1 for each time the tile is detected
 		int current_tile_value = Get_tile(x_tile_glob,y_tile_glob);
 		
-		if(current_tile_value == 0)
+		
+		
+		if(!neighbour_tile_to_robot(x_tile_glob, y_tile_glob))
 		{
-			newVal = 5;
-			Set_tile(x_tile_glob, y_tile_glob, newVal);
-		}
+		   if(current_tile_value == 0)
+		   {
+			   newVal = 5;
+			   Set_tile(x_tile_glob, y_tile_glob, newVal);
+		   }
 
-		else if(current_tile_value < 255 && current_tile_value != 1 && current_tile_value != 2)
-		{
-			newVal = current_tile_value + 1;
-		    Set_tile(x_tile_glob, y_tile_glob, newVal);
+		   else if(current_tile_value < 255 && current_tile_value != 1 && current_tile_value != 2)
+		   {
+			   newVal = current_tile_value + 1;
+			   Set_tile(x_tile_glob, y_tile_glob, newVal);
+		   }
+	
 		}
-
 		
 
 	}
+}
+
+
+
+bool neighbour_tile_to_robot(int16_t tile_x_dir, int16_t tile_y_dir)
+{
+	return ((robot_pos.x_tile     == tile_x_dir && robot_pos.y_tile == tile_y_dir) || 
+	        (robot_pos.x_tile - 1 == tile_x_dir && robot_pos.y_tile == tile_y_dir) ||
+			(robot_pos.x_tile + 1 == tile_x_dir && robot_pos.y_tile == tile_y_dir) ||
+			(    robot_pos.x_tile == tile_x_dir && robot_pos.y_tile - 1 == tile_y_dir) || 
+			(    robot_pos.x_tile == tile_x_dir && robot_pos.y_tile + 1 == tile_y_dir));
+	
 }

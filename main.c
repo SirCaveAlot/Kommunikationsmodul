@@ -131,6 +131,9 @@ int main(void)
 	robot_pos.x = 0;
 	robot_pos.y = 0;
 	robot_pos.angle = 0;
+	robot_pos.x_tile = 14;
+	robot_pos.y_tile = 14;
+	
 	
     Spi_init();		//Initialize slave SPI
 	Movement_Queue_Init();
