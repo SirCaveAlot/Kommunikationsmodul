@@ -82,6 +82,13 @@ void Simulation()
 // 		Movement_Queue_Put(2);
 
 		Movement_Queue_Put('L');
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(4);
+		Movement_Queue_Put('L');
+		Movement_Queue_Put('f');
+		Movement_Queue_Put(2);
+		Movement_Queue_Put('L');
+		
 		/*
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(3);
@@ -124,6 +131,9 @@ int main(void)
 	robot_pos.x = 0;
 	robot_pos.y = 0;
 	robot_pos.angle = 0;
+	robot_pos.x_tile = 14;
+	robot_pos.y_tile = 14;
+	
 	
     Spi_init();		//Initialize slave SPI
 	Movement_Queue_Init();
@@ -263,6 +273,8 @@ int main(void)
 					{
 						if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
 						{
+							
+							
 							if(last_movement == 'b' && next_movement != 'b')
 							{
 								robot_turn_around();
@@ -275,6 +287,7 @@ int main(void)
 							else if(next_movement == 'l')
 							{
 								robot_turn_left();
+								PORTA |= (1<<4);
 							}
 							else if(next_movement == 'b')
 							{
@@ -305,6 +318,7 @@ int main(void)
 					else if(next_movement == 'l')
 					{
 						robot_turn_left();
+						PORTA |= (1<<4);
 					}
 					else if(next_movement == 'b')
 					{

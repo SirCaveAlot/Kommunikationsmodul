@@ -154,8 +154,9 @@ void Dequeue_SPI_queue_D_mode()
 			Left_side_detectable(left_IR);
 			
 			//forward IR
-			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
-			SPI_queue_remove();
+			SPI_queue_get(&front_IR);
+			USART_Transmit(front_IR, 1);
+			Front_side_detectable(front_IR);
 			
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
@@ -192,8 +193,8 @@ void Dequeue_SPI_queue_D_mode()
 			
 			USART_Transmit(last_movement, 1);
 			USART_Transmit(Get_robot_direction(), 1);
-			USART_Transmit(Get_robot_tile_x(), 1);
-			USART_Transmit(Get_robot_tile_y(), 1);
+			USART_Transmit(robot_pos.x_tile, 1);
+			USART_Transmit(robot_pos.y_tile, 1);
 			if(mode_changed)
 			{
 				mode = 'L';
@@ -277,6 +278,7 @@ void Dequeue_SPI_queue_L_mode()
 		{
 			mode = 'S';
 			angle_counter = 0;
+			distance_counter = 0;
 			running = false;
 // 			USART_Transmit(0, 0);
 // 			USART_Transmit('S', 0);

@@ -32,6 +32,7 @@ bool X_line(int x[], int y[]);
 int Match_tile_x(int x[],int y[]);
 int Match_tile_y(int x[],int y[]);
 void Update_map(int x[],int y[]);
+bool neighbour_tile_to_robot(int16_t tile_x_dir, int16_t tile_y_dir);
 
 
 

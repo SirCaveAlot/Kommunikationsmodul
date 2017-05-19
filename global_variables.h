@@ -18,6 +18,7 @@ extern uint8_t mode;
 
 extern uint8_t left_IR;
 extern uint8_t right_IR;
+extern uint8_t front_IR;
 
 extern int distance_counter;
 extern int angle_counter;
@@ -35,6 +36,8 @@ typedef struct coordinates
 	int x;
 	int y;
 	float angle;
+	uint8_t x_tile;
+	uint8_t y_tile;
 }coordinates;
 
 extern coordinates robot_pos;

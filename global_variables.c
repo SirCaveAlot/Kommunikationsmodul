@@ -14,6 +14,7 @@
 uint8_t mode = 'D';
 uint8_t left_IR = 0;
 uint8_t right_IR = 0;
+uint8_t front_IR = 0;
 uint8_t distance_traveled = 0;
 
 uint8_t last_movement = 0;
