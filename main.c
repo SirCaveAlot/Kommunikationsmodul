@@ -18,6 +18,7 @@
 #include "matchtile.h"
 #include "global_variables.h"
 #include "SearchAndFind.h"
+#include "Positioning.h"
 
 // Variables 
 uint8_t data = 0;
@@ -81,17 +82,9 @@ void Simulation()
 // 		Movement_Queue_Put('f');
 // 		Movement_Queue_Put(2);
 
-		Movement_Queue_Put('L');
-		Movement_Queue_Put('f');
-		Movement_Queue_Put(4);
-		Movement_Queue_Put('L');
-		Movement_Queue_Put('f');
-		Movement_Queue_Put(2);
-		Movement_Queue_Put('L');
-		
-		/*
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(3);
+/*		
 		Movement_Queue_Put('l');
 		Movement_Queue_Put(90);
 		Movement_Queue_Put('f');
@@ -145,6 +138,20 @@ int main(void)
 	
     while(1)
     {
+		if(competition_mode == 1)
+		{
+			//PORTA = competition_mode;
+			robot_keep_right();
+		}
+		else if(competition_mode == 2)
+		{
+			// Fill the remaining tiles
+		}
+		else if(competition_mode == 3)
+		{
+			// Shortest path algorithm
+		}
+		
 		if(mode == 'S')
 		{
 			Window();
@@ -176,13 +183,30 @@ int main(void)
 				Movement_Queue_Out = (Movement_Queue_In - 1) % 21;
 				Movement_queue_length = 1;
 				//Gustav
-				Simulation();
+				if(competition_mode == 0)
+				{
+					//Simulation();
+				}
 // 				Movement_Queue_Put('f');
 // 				Movement_Queue_Put(3);
 				//Gustav end
 				break;
 				
 				// Gustav start
+				
+				case 'C':
+// 				if(competition_mode == 2)
+// 				{
+// 					competition_mode = 3;
+// 					USART_Transmit('C', 0);
+// 				}
+// 				else
+// 				{
+				competition_mode = 1;
+				Movement_Queue_Put('f');
+				Movement_Queue_Put(15);
+				
+				break;
 				
 				case 'f':
 				if(auto_control)
@@ -251,20 +275,20 @@ int main(void)
 		}
 		
 		if (!Movement_queue_empty() && mode == 'D')
-		{
+		{		
 			if(auto_control)
 			{
 				if (running == false)
 				{
 					Movement_Queue_Get(&next_movement);
-					
+					PORTA = next_movement;
 					if(next_movement == 'L')
 					{
 						mode_changed = true;
 						running = true;
 					}
 					USART_Transmit(0, 0);
-					if(next_movement == 'A' || next_movement == 'L' || next_movement == 's' || next_movement == 'S')
+					if(next_movement == 'A' || next_movement == 'L' || next_movement == 's' || next_movement == 'S' || next_movement == 'C')
 					{
 						USART_Transmit(next_movement, 0);
 						USART_Transmit(0, 0);
@@ -277,25 +301,35 @@ int main(void)
 							
 							if(last_movement == 'b' && next_movement != 'b')
 							{
-								robot_turn_around();
+								Robot_turn_around();
 							}
 							last_movement = next_movement;
 							if (next_movement == 'r')
 							{
-								robot_turn_right();
+								Robot_turn_right();
 							}
 							else if(next_movement == 'l')
 							{
-								robot_turn_left();
-								PORTA |= (1<<4);
+								Robot_turn_left();
 							}
 							else if(next_movement == 'b')
 							{
-								robot_turn_around();
+								Robot_turn_around();
 							}
 						}
 						USART_Transmit(next_movement, 0);
 						Movement_Queue_Get(&next_movement);
+						if(next_movement == 180)
+						{
+							if(last_movement == 'l')
+							{
+								Robot_turn_left();
+							}
+							else if(last_movement == 'r')
+							{
+								Robot_turn_right();
+							}
+						}
 						USART_Transmit(next_movement, 0);
 						running = true;
 					}
@@ -308,21 +342,20 @@ int main(void)
 				{
 					if(last_movement == 'b' && next_movement != 'b')
 					{
-						robot_turn_around();
+						Robot_turn_around();
 					}
 					last_movement = next_movement;
 					if (next_movement == 'r')
 					{
-						robot_turn_right();
+						Robot_turn_right();
 					}
 					else if(next_movement == 'l')
 					{
-						robot_turn_left();
-						PORTA |= (1<<4);
+						Robot_turn_left();
 					}
 					else if(next_movement == 'b')
 					{
-						robot_turn_around();
+						Robot_turn_around();
 					}
 				}
 				USART_Transmit(0, 0);

@@ -26,6 +26,4 @@ volatile extern bool right_side_detected;
 volatile extern bool left_side_detected;
 volatile extern bool front_side_detected;
 
-
-
 #endif /* MAPPING_H_ */
