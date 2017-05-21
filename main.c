@@ -138,19 +138,7 @@ int main(void)
 	
     while(1)
     {
-		if(competition_mode == 1)
-		{
-			//PORTA = competition_mode;
-			robot_keep_right();
-		}
-		else if(competition_mode == 2)
-		{
-			// Fill the remaining tiles
-		}
-		else if(competition_mode == 3)
-		{
-			// Shortest path algorithm
-		}
+	
 		
 		if(mode == 'S')
 		{
@@ -371,6 +359,19 @@ int main(void)
 		else if(mode == 'L')
 		{
 			Dequeue_SPI_queue_L_mode();
+		}
+		if(competition_mode == 1)
+		{
+			//PORTA = competition_mode;
+			robot_keep_right();
+		}
+		else if(competition_mode == 2)
+		{
+			// Fill the remaining tiles
+		}
+		else if(competition_mode == 3)
+		{
+			// Shortest path algorithm
 		}
 	}
 }

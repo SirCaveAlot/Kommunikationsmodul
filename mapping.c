@@ -36,7 +36,7 @@ int array_x[10];
 int array_y[10];
 
 
-void Calibrate_robot_positoin()
+void Calibrate_robot_position()
 {
 	for(int i=0; i < 28; i++)
 	{
@@ -174,7 +174,7 @@ uint8_t Get_robot_tile_y()
 
 void Right_side_detectable(uint8_t IR_data)
 {
-	if(IR_data >= 45)
+	if(IR_data >= 67)
 	{
 		right_side_detected = true;
 	}
@@ -186,7 +186,7 @@ void Right_side_detectable(uint8_t IR_data)
 
 void Left_side_detectable(uint8_t IR_data)
 {
-	if(IR_data >= 45)
+	if(IR_data >= 67)
 	{
 		left_side_detected = true;
 	}
@@ -198,7 +198,7 @@ void Left_side_detectable(uint8_t IR_data)
 
 void Front_side_detectable(uint8_t IR_data)
 {
-	if(IR_data >= 45)
+	if(IR_data >= 67)
 	{
 		front_side_detected = true;
 	}
@@ -210,15 +210,15 @@ void Front_side_detectable(uint8_t IR_data)
 
 void Set_tile_from_ir()
 {
-    if((((robot_pos.x/10 % 40) > 10) && ((robot_pos.x/10 % 40) < 30))  ||
-	   (((robot_pos.y/10 % 40) > 10) && ((robot_pos.y/10 % 40) < 30)))
+	Set_tile(robot_pos.x_tile, robot_pos.y_tile, 1);
+	
+    if((((robot_pos.x/10 % 40) > 15) && ((robot_pos.x/10 % 40) < 35))  ||
+	   (((robot_pos.y/10 % 40) > 15) && ((robot_pos.y/10 % 40) < 35)))
 
 	{
 		return;
 	}
-	
-	Set_tile(robot_pos.x_tile, robot_pos.y_tile, 1);
-	
+		
 	uint8_t direction_tile_robot = Get_robot_direction();
 	
 	if(direction_tile_robot == 8) //direction up

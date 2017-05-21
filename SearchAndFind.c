@@ -144,31 +144,62 @@ void robot_keep_right()
 	{
 		if(!running && Movement_queue_empty())
 		{
-			if(!front_side_detected && !left_side_detected && right_side_detected) //as long as we have wall to the right
+			if (front_side_detected && left_side_detected && right_side_detected)
 			{
+				Movement_Queue_Put('r');
+				Movement_Queue_Put(180);
 				Movement_Queue_Put('f');
 				Movement_Queue_Put(15);
 			}
-			else if(front_side_detected && !left_side_detected && right_side_detected)
+			else if (front_side_detected && right_side_detected)
 			{
+				//Calibrate_robot_position();
 				Movement_Queue_Put('l');
 				Movement_Queue_Put(90);
 				Movement_Queue_Put('f');
 				Movement_Queue_Put(15);
 			}
-			else if(left_side_detected && right_side_detected)
+			else if (right_side_detected)
 			{
-				Movement_Queue_Put('l');
-				Movement_Queue_Put(90);
+				Movement_Queue_Put('f');
+				Movement_Queue_Put(15);
 			}
-			else if(!right_side_detected)
+			else
 			{
+				//Calibrate_robot_position();
 				Movement_Queue_Put('L');
 				Movement_Queue_Put('r');
 				Movement_Queue_Put(90);
 				Movement_Queue_Put('f');
 				Movement_Queue_Put(15);
 			}
+// 			if(!front_side_detected && !left_side_detected && right_side_detected) //as long as we have wall to the right
+// 			{
+// 				Movement_Queue_Put('f');
+// 				Movement_Queue_Put(15);
+// 			}
+// 			else if(front_side_detected && !left_side_detected && right_side_detected)
+// 			{
+// 				Movement_Queue_Put('l');
+// 				Movement_Queue_Put(90);
+// 				Movement_Queue_Put('f');
+// 				Movement_Queue_Put(15);
+// 			}
+// 			else if(left_side_detected && right_side_detected)
+// 			{
+// 				Movement_Queue_Put('r');
+// 				Movement_Queue_Put(180);
+// 				Movement_Queue_Put('f');
+// 				Movement_Queue_Put(15);
+// 			}
+// 			else if(!right_side_detected)
+// 			{
+// 				Movement_Queue_Put('L');
+// 				Movement_Queue_Put('r');
+// 				Movement_Queue_Put(90);
+// 				Movement_Queue_Put('f');
+// 				Movement_Queue_Put(15);
+// 			}
 		}
 	}
 	else

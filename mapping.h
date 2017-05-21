@@ -8,6 +8,7 @@
 #ifndef MAPPING_H_
 #define MAPPING_H_
 
+void Calibrate_robot_position();
 void Window ();
 void Set_robot_position(int16_t xpos, int16_t ypos);
 void Set_robot_angle_direction(uint8_t direction);
