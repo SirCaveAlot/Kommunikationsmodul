@@ -36,6 +36,24 @@ int array_x[10];
 int array_y[10];
 
 
+void Calibrate_robot_positoin()
+{
+	for(int i=0; i < 28; i++)
+	{
+		if((robot_pos.x/10 > line_array_x[i] ) && (robot_pos.x/10 < line_array_x[i+1]))
+		{
+			robot_pos.x = (line_array_x[i] + line_array_x[i+1])/2;
+		}
+	}
+	for(int i=0; i < 27; i++)
+	{
+		if((robot_pos.y/10 > line_array_y[i] ) && (robot_pos.y/10 < line_array_y[i+1]))
+		{
+			robot_pos.y = (line_array_y[i] + line_array_y[i+1])/2;
+		}
+	}
+}
+
 
 void Set_robot_position(int16_t xpos, int16_t ypos)
 {
