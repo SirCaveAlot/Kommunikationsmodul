@@ -210,34 +210,16 @@ void find_first_undiscovered_tile_x()
 }
 
 
-bool finished_with_drive_nearest_path;
-//int front_distance =...
-
 
 int nearest_path_array[29][29]; //contains the coordinates with the nearest path
 
 int gurras_array[20][3] = //example of what gurras_array might look like
 {
-	{14, 14, 19} ,
-	{13, 14, 18} ,
-	{12, 14, 17} ,
-	{11, 14, 16} ,
-	{10, 14, 15} ,
-	{9, 14, 14} ,
-	{9, 13, 13} ,
-	{9, 12, 12} ,
-	{9, 11, 11} ,
-	{9, 10, 10} ,
-	{9, 9, 9} ,
-	{9, 7, 8} ,
-	{9, 6, 7} ,
-	{9, 5, 6} ,
-	{9, 4, 5} ,
-	{8, 4, 4} ,
-	{7, 4, 3} ,
-	{6, 4, 2} ,
-	{5, 4, 1} ,
-	{4, 4, 0} 
+	{14, 14, 4} ,
+	{13, 14, 3} ,
+	{13, 15, 2} ,
+	{12, 15, 1} ,
+	{11, 15, 0} 
 };
 
 void nearest_path_to_array() //takes the coordinates from gurras_array and puts it in nearest_path_array[29][29]
@@ -276,6 +258,7 @@ void nearest_path_to_array() //takes the coordinates from gurras_array and puts 
 
 bool detect_path(int next_yposition,int next_xposition, int value) //detects if coordinate is given path coordinate
 {
+	nearest_path_to_array();
 	if(nearest_path_array[next_yposition][next_xposition] == value)
 	{
 		return true;
@@ -317,7 +300,7 @@ bool drive_nearest_path() //follows given path from gurras_array
 		Movement_Queue_Put(steps);
 		return false;
 	}
-	if(detect_path(right_y_pos(), right_x_pos(), 3))
+	else if(detect_path(right_y_pos(), right_x_pos(), 3))
 	{
 		//set_coordinate_in_NP_array(ypos, xpos, 1);
 		//robot_turn_right();
@@ -336,7 +319,6 @@ bool drive_nearest_path() //follows given path from gurras_array
 	else
 	{
 		//turn around
-		finished_with_drive_nearest_path = true;
 		return true;
 	}
 
