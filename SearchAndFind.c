@@ -145,7 +145,8 @@ void robot_keep_right()
 		if(!running && Movement_queue_empty())
 		{
 			if (front_side_detected && left_side_detected && right_side_detected)
-			{
+			{   
+				Calibrate_robot_position();
 				Movement_Queue_Put('r');
 				Movement_Queue_Put(180);
 				Movement_Queue_Put('f');
@@ -153,7 +154,7 @@ void robot_keep_right()
 			}
 			else if (front_side_detected && right_side_detected)
 			{
-				//Calibrate_robot_position();
+				Calibrate_robot_position();
 				Movement_Queue_Put('l');
 				Movement_Queue_Put(90);
 				Movement_Queue_Put('f');
@@ -166,7 +167,7 @@ void robot_keep_right()
 			}
 			else
 			{
-				//Calibrate_robot_position();
+				//Calibrate_robot_position§1§§§§§§§§§§§§§§§§§();
 				Movement_Queue_Put('L');
 				Movement_Queue_Put('r');
 				Movement_Queue_Put(90);

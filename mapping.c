@@ -35,24 +35,32 @@ int size = 4000;
 int array_x[10];
 int array_y[10];
 
-
+/*
 void Calibrate_robot_position()
 {
-	for(int i=0; i < 28; i++)
+	for(int i=0; i < 29; i++)
 	{
 		if((robot_pos.x/10 > line_array_x[i] ) && (robot_pos.x/10 < line_array_x[i+1]))
 		{
 			robot_pos.x = (line_array_x[i] + line_array_x[i+1])/2;
 		}
 	}
-	for(int i=0; i < 27; i++)
+	for(int i=0; i < 28; i++)
 	{
 		if((robot_pos.y/10 > line_array_y[i] ) && (robot_pos.y/10 < line_array_y[i+1]))
 		{
 			robot_pos.y = (line_array_y[i] + line_array_y[i+1])/2;
 		}
 	}
+}*/
+
+void Calibrate_robot_position()
+{
+	robot_pos.x = round((float)robot_pos.x / 40) * 40;
+	robot_pos.y = round((float)robot_pos.y / 40) * 40;
+	
 }
+
 
 
 void Set_robot_position(int16_t xpos, int16_t ypos)
@@ -143,7 +151,7 @@ uint8_t Get_robot_tile_x()
 	int x_tile_cm;
 	uint8_t x_tile_matrix = 255;
 	
-	for(int i=0; i < 28; i++)
+	for(int i=0; i < 29; i++)
 	{
 		if((robot_pos.x/10 > line_array_x[i] ) && (robot_pos.x/10 < line_array_x[i+1]))
 		{
@@ -160,7 +168,7 @@ uint8_t Get_robot_tile_y()
 	int y_tile_cm;
 	uint8_t y_tile_matrix = 255;
 	
-	for(int i=0; i < 27; i++)
+	for(int i=0; i < 28; i++)
 	{
 		if((robot_pos.y/10 > line_array_y[i] ) && (robot_pos.y/10 < line_array_y[i+1]))
 		{
@@ -212,8 +220,8 @@ void Set_tile_from_ir()
 {
 	Set_tile(robot_pos.x_tile, robot_pos.y_tile, 1);
 	
-    if((((robot_pos.x/10 % 40) > 15) && ((robot_pos.x/10 % 40) < 35))  ||
-	   (((robot_pos.y/10 % 40) > 15) && ((robot_pos.y/10 % 40) < 35)))
+    if((((robot_pos.x/10 % 40) > 10) && ((robot_pos.x/10 % 40) < 30))  ||
+	   (((robot_pos.y/10 % 40) > 10) && ((robot_pos.y/10 % 40) < 30)))
 
 	{
 		return;
@@ -485,11 +493,11 @@ void Window ()
 			{
 				array_x[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
 				(cos(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) *
-				 marcus_to_radian + (M_PI / 2) - (robot_pos.angle))) 
+				 marcus_to_radian + (M_PI / 2) + (robot_pos.angle))) 
 				+ robot_pos.x/10;
 				array_y[i / 2] = (int) (distance_array[vector_position] << 8 | distance_array[vector_position + 1]) *
 				(sin(((angle_array[vector_position] << 8 | angle_array[vector_position + 1]) - 6 * 1000 / 360) * 
-				marcus_to_radian + (M_PI / 2) - (robot_pos.angle)))
+				marcus_to_radian + (M_PI / 2) + (robot_pos.angle)))
 				 + robot_pos.y/10;
 			}
 		}

@@ -191,6 +191,7 @@ int main(void)
 // 				else
 // 				{
 				competition_mode = 1;
+				
 				Movement_Queue_Put('f');
 				Movement_Queue_Put(15);
 				
