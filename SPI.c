@@ -148,7 +148,11 @@ void Dequeue_SPI_queue_D_mode()
 			
 			SPI_queue_get(&right_IR);
 			USART_Transmit(right_IR, 1);
-			Right_side_detectable(right_IR);
+			
+			SPI_queue_get(&right_IR_back);
+			USART_Transmit(right_IR_back, 1);
+			Right_side_detectable(right_IR, right_IR_back);
+			
 			SPI_queue_get(&left_IR);
 			USART_Transmit(left_IR, 1);
 			Left_side_detectable(left_IR);
@@ -171,9 +175,12 @@ void Dequeue_SPI_queue_D_mode()
 			{
 				update_robot_position(distance_traveled);
 			}
-			
-			Set_tile_from_ir();
-			
+			if (last_movement != 'r' || last_movement != 'l')
+			{
+			    Set_tile_from_ir();
+	
+			}
+						
 			USART_Transmit((uint8_t)(robot_pos.x >> 8), 1);
 			USART_Transmit((uint8_t)(robot_pos.x), 1);
 			USART_Transmit((uint8_t)(robot_pos.y >> 8), 1);

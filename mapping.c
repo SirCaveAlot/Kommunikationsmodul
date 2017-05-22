@@ -56,8 +56,8 @@ void Calibrate_robot_position()
 
 void Calibrate_robot_position()
 {
-	robot_pos.x = round((float)robot_pos.x / 40) * 40;
-	robot_pos.y = round((float)robot_pos.y / 40) * 40;
+	robot_pos.x = round((float)robot_pos.x / 400) * 400;
+	robot_pos.y = round((float)robot_pos.y / 400) * 400;
 	
 }
 
@@ -160,8 +160,17 @@ uint8_t Get_robot_tile_x()
 			return x_tile_matrix;	
 		}	
 	}
+	/*
+	uint8_t return_val = round((float) ((robot_pos.x / 10) + 560) / 40 ); 
+	if (return_val > 127)
+	{
+		return 0;
+	}
+	*/
 	return x_tile_matrix;
 }
+
+
 
 uint8_t Get_robot_tile_y()
 {
@@ -177,12 +186,19 @@ uint8_t Get_robot_tile_y()
 			return y_tile_matrix;
 		}
 	}
+	
+	/*uint8_t return_val = round((float) ((robot_pos.y / 10) + 560) / 40 );
+	if (return_val > 127)
+	{
+		return 0;
+	}*/
+	
 	return y_tile_matrix;
 }
 
-void Right_side_detectable(uint8_t IR_data)
+void Right_side_detectable(uint8_t IR_data, uint8_t IR_back_data)
 {
-	if(IR_data >= 67)
+	if(IR_data >= 67 && IR_back_data >= 67)
 	{
 		right_side_detected = true;
 	}
@@ -220,9 +236,8 @@ void Set_tile_from_ir()
 {
 	Set_tile(robot_pos.x_tile, robot_pos.y_tile, 1);
 	
-    if((((robot_pos.x/10 % 40) > 10) && ((robot_pos.x/10 % 40) < 30))  ||
-	   (((robot_pos.y/10 % 40) > 10) && ((robot_pos.y/10 % 40) < 30)))
-
+    if(((abs(robot_pos.x/10 % 40) > 5) && (abs(robot_pos.x/10 % 40) < 35))  ||
+	   ((abs(robot_pos.y/10 % 40) > 5)	&& (abs(robot_pos.y/10 % 40) < 35)))
 	{
 		return;
 	}
