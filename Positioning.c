@@ -12,15 +12,13 @@
 #include "Positioning.h"
 #include "SearchAndFind.h"
 #include "mapping.h"
+#include "global_variables.h"
 
 #define up 8
 #define down 2
 #define left 4
 #define right 6
 
-int8_t xpos;
-int8_t ypos;
-int8_t direction;
 
 void Robot_turn_right()
 {
@@ -88,79 +86,10 @@ void Robot_set_direction(uint8_t next_direction)
 	Set_robot_angle_direction(next_direction);
 }
 
-//changing robot direction to given direction
-void set_direction(int8_t next_direction)
-{
-	direction = next_direction;
-}
-
-//always turning right in relation to where it's heading
-void turn_right()
-{
-	if(direction == up)
-	{
-		set_direction(right);
-	}
-	else if(direction == right)
-	{
-		set_direction(down);
-	}
-	else if(direction == down)
-	{
-		set_direction(left);
-	}
-	else if(direction == left)
-	{
-		set_direction(up);
-	}
-}
-
-//always turning left in relation to where it's heading
-void turn_left()
-{
-	if(direction ==  up)
-	{
-		set_direction(left);
-	}
-	else if(direction == right)
-	{
-		set_direction(up);
-	}
-	else if(direction == down)
-	{
-		set_direction(right);
-	}
-	else if(direction == left)
-	{
-		set_direction(down);
-	}
-}
-
-void turn_around()
-{
-	if(direction ==  up)
-	{
-		set_direction(down);
-	}
-	else if(direction == right)
-	{
-		set_direction(left);
-	}
-	else if(direction == down)
-	{
-		set_direction(up);
-	}
-	else if(direction == left)
-	{
-		set_direction(right);
-	}
-}
-
 //calculates next pos (general)
 int8_t next_y_position(int8_t next_direction)
 {
-	int8_t next_ypos;
-	next_ypos = ypos;
+	int8_t next_ypos = robot_pos.y_tile;
 	
 	if(next_direction == up)
 	{
@@ -175,8 +104,7 @@ int8_t next_y_position(int8_t next_direction)
 
 int8_t next_x_position(int8_t next_direction)
 {
-	int8_t next_xpos;
-	next_xpos = xpos;
+	int8_t next_xpos = robot_pos.x_tile;
 	
 	if(next_direction == right)
 	{
@@ -192,46 +120,32 @@ int8_t next_x_position(int8_t next_direction)
 //position to the right of the robot x coordinates
 int8_t right_x_pos()
 {
-	int8_t right_x_pos;
-	right_x_pos = xpos;
-	if(direction == up)
+	int8_t right_x_pos = robot_pos.x_tile;
+
+	if(Get_robot_direction() == up)
 	{
-		right_x_pos = xpos +1;
+		right_x_pos += 1;
 	}
-	else if(direction == down)
+	else if(Get_robot_direction() == down)
 	{
-		right_x_pos = xpos -1;
+		right_x_pos -= 1;
 	}
-	else if(direction == left)
-	{
-		right_x_pos = xpos;
-	}
-	else if(direction == right)
-	{
-		right_x_pos = xpos;
-	}
+
 	return right_x_pos;
 }
 
 //position to the right of the robot y coordinates
 int8_t right_y_pos()
 {
-	int8_t right_y_pos = ypos;
-	if(direction == up)
+	int8_t right_y_pos = robot_pos.y_tile;
+
+	if(Get_robot_direction() == left)
 	{
-		right_y_pos = ypos;
+		right_y_pos -= 1;
 	}
-	else if(direction == down)
+	else if(Get_robot_direction() == right)
 	{
-		right_y_pos = ypos;
-	}
-	else if(direction == left)
-	{
-		right_y_pos = ypos -1;
-	}
-	else if(direction == right)
-	{
-		right_y_pos = ypos +1;
+		right_y_pos += 1;
 	}
 	return right_y_pos;
 }
@@ -239,22 +153,14 @@ int8_t right_y_pos()
 //position to the left of the robot x coordinates
 int8_t left_x_pos()
 {
-	int8_t left_x_pos = xpos;
-	if(direction == up)
+	int8_t left_x_pos = robot_pos.x_tile;
+	if(Get_robot_direction() == up)
 	{
-		left_x_pos = xpos -1;
+		left_x_pos -=1;
 	}
-	else if(direction == down)
+	else if(Get_robot_direction() == down)
 	{
-		left_x_pos = xpos +1;
-	}
-	else if(direction == left)
-	{
-		left_x_pos = xpos;
-	}
-	else if(direction == right)
-	{
-		left_x_pos = xpos;
+		left_x_pos +=1;
 	}
 	return left_x_pos;
 }
@@ -262,112 +168,118 @@ int8_t left_x_pos()
 //position to the left of the robot y coordinates
 int8_t left_y_pos()
 {
-	int8_t left_y_pos = ypos;
-	if(direction == up)
+	int8_t left_y_pos = robot_pos.y_tile;
+	if(Get_robot_direction() == left)
 	{
-		left_y_pos = ypos;
+		left_y_pos +=1;
 	}
-	else if(direction == down)
+	else if(Get_robot_direction() == right)
 	{
-		left_y_pos = ypos;
-	}
-	else if(direction == left)
-	{
-		left_y_pos = ypos +1;
-	}
-	else if(direction == right)
-	{
-		left_y_pos = ypos -1;
+		left_y_pos -=1;
 	}
 	return left_y_pos;
 }
 
 int8_t back_x_pos()
 {
-	int8_t back_x_pos = xpos;
-	if(direction == up)
+	int8_t back_x_pos = robot_pos.x_tile;
+
+	if(Get_robot_direction() == left)
 	{
-		back_x_pos = xpos;
+		back_x_pos +=1;
 	}
-	else if(direction == down)
+	else if(Get_robot_direction() == right)
 	{
-		back_x_pos = xpos;
-	}
-	else if(direction == left)
-	{
-		back_x_pos = xpos + 1;
-	}
-	else if(direction == right)
-	{
-		back_x_pos = xpos - 1;
+		back_x_pos -=1;
 	}
 	return back_x_pos;
 }
 
 int8_t back_y_pos()
 {
-	int8_t back_y_pos = ypos;
-	if(direction == up)
+	int8_t back_y_pos = robot_pos.y_tile;
+	if(Get_robot_direction() == up)
 	{
-		back_y_pos = ypos + 1;
+		back_y_pos +=1;
 	}
-	else if(direction == down)
+	else if(Get_robot_direction() == down)
 	{
-		back_y_pos = ypos - 1;
-	}
-	else if(direction == left)
-	{
-		back_y_pos = ypos;
-	}
-	else if(direction == right)
-	{
-		back_y_pos = ypos;
+		back_y_pos -=1;
 	}
 	return back_y_pos;
 }
 
 int8_t forward_to_left_x_pos()
 {
-	int8_t forward_to_left_x_pos = xpos;
-	if(direction == up)
+	int8_t forward_to_left_x_pos = robot_pos.x_tile;
+	if(Get_robot_direction() == up)
 	{
-		forward_to_left_x_pos = xpos -1;
+		forward_to_left_x_pos = robot_pos.x_tile -1;
 	}
-	else if(direction == down)
+	else if(Get_robot_direction() == down)
 	{
-		forward_to_left_x_pos = xpos +1;
+		forward_to_left_x_pos = robot_pos.x_tile +1;
 	}
-	else if(direction == left)
+	else if(Get_robot_direction() == left)
 	{
-		forward_to_left_x_pos = xpos -1;
+		forward_to_left_x_pos = robot_pos.x_tile -1;
 	}
-	else if(direction == right)
+	else if(Get_robot_direction() == right)
 	{
-		forward_to_left_x_pos = xpos +1;
+		forward_to_left_x_pos = robot_pos.x_tile +1;
 	}
 	return forward_to_left_x_pos;
 }
 
 int8_t forward_to_left_y_pos()
 {
-	int8_t forward_to_left_y_pos = ypos;
-	if(direction == up)
+	int8_t forward_to_left_y_pos = robot_pos.y_tile;
+	if(Get_robot_direction() == up)
 	{
-		forward_to_left_y_pos = ypos -1;
+		forward_to_left_y_pos = robot_pos.y_tile -1;
 	}
-	else if(direction == down)
+	else if(Get_robot_direction() == down)
 	{
-		forward_to_left_y_pos = ypos +1;
+		forward_to_left_y_pos = robot_pos.y_tile +1;
 	}
-	else if(direction == left)
+	else if(Get_robot_direction() == left)
 	{
-		forward_to_left_y_pos = ypos +1;
+		forward_to_left_y_pos = robot_pos.y_tile +1;
 	}
-	else if(direction == right)
+	else if(Get_robot_direction() == right)
 	{
-		forward_to_left_y_pos = ypos -1;
+		forward_to_left_y_pos = robot_pos.y_tile -1;
 	}
 	return forward_to_left_y_pos;
 }
+
+uint8_t y_positions_forward(uint8_t next_direction, uint8_t steps_forward)
+{
+	uint8_t next_ypos = robot_pos.y_tile;
+	if(next_direction == up)
+	{
+		next_ypos = robot_pos.y_tile - steps_forward;
+	}
+	else if(next_direction == down)
+	{
+		next_ypos = robot_pos.y_tile + steps_forward;
+	}
+	return next_ypos;
+}
+
+uint8_t x_positions_forward(uint8_t next_direction, uint8_t steps_forward)
+{
+	int8_t next_xpos = robot_pos.x_tile;
+	if(next_direction == right)
+	{
+		next_xpos = robot_pos.x_tile + steps_forward;
+	}
+	else if(next_direction == left)
+	{
+		next_xpos = robot_pos.x_tile - steps_forward;
+	}
+	return next_xpos;
+}
+
 
 

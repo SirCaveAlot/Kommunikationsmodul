@@ -127,6 +127,12 @@
     <Compile Include="Adjacent_array.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="fake_robot_code.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="fake_robot_code.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="global_variables.c">
       <SubType>compile</SubType>
     </Compile>

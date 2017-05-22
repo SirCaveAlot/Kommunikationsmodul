@@ -62,8 +62,8 @@ ISR(USART0_RX_vect)
 		}
 		else if (uart0_received == 't')
 		{
-			last_movement = 'b';
 			Set_peepz_in_da_needz();
+			last_movement = 'b';
 			USART_Transmit('B', 0);
 		}
 	}
