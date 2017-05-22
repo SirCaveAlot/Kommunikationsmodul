@@ -62,9 +62,18 @@ ISR(USART0_RX_vect)
 		}
 		else if (uart0_received == 't')
 		{
-			Set_peepz_in_da_needz();
-			last_movement = 'b';
-			USART_Transmit('B', 0);
+
+			if (robot_pos.x_tile == 14 && (robot_pos.y_tile == 14 || robot_pos.y_tile == 13))
+			{
+				USART_Transmit('F', 0);
+			}
+			else
+			{
+				last_movement = 'b';
+				Set_peepz_in_da_needz();
+				USART_Transmit('B', 0);
+			}
+
 		}
 	}
 }
@@ -142,6 +151,7 @@ int main(void)
 		
 		if(mode == 'S')
 		{
+			Calibrate_robot_position();
 			Window();
 			if(pc_ready)
 			{
