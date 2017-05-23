@@ -42,8 +42,6 @@ bool detect_path(int next_yposition,int next_xposition, int value);
 
 void drive_to_distressed_and_return();
 
-void nearest_path_to_array();
-
 void robot_detect_outer_walls();
 
 void find_unknown_cells_after_detection_of_outer_walls();

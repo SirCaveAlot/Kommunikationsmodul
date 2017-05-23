@@ -8,10 +8,6 @@
 #ifndef POSITIONING_H_
 #define POSITIONING_H_
 
-extern int8_t xpos;
-extern int8_t ypos;
-extern int8_t direction;
-
 void Robot_turn_right();
 
 void Robot_turn_left();
@@ -26,7 +22,7 @@ void turn_right();
 
 void turn_left();
 
-void turn_around();
+//void turn_around();
 
 int8_t next_y_position(int8_t next_direction);
 
@@ -47,5 +43,9 @@ int8_t back_y_pos();
 int8_t forward_to_left_x_pos();
 
 int8_t forward_to_left_y_pos();
+
+uint8_t y_positions_forward(uint8_t next_direction, uint8_t steps_forward);
+
+uint8_t x_positions_forward(uint8_t next_direction, uint8_t steps_forward);
 
 #endif /* POSITIONING_H_ */

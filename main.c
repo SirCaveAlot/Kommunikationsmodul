@@ -68,6 +68,7 @@ ISR(USART0_RX_vect)
 		}
 		else if (uart0_received == 't')
 		{
+
 			if (robot_pos.x_tile == 14 && (robot_pos.y_tile == 14 || robot_pos.y_tile == 13))
 			{
 				USART_Transmit('F', 0);
@@ -77,6 +78,7 @@ ISR(USART0_RX_vect)
 				last_movement = 'b';
 				USART_Transmit('B', 0);
 			}
+
 		}
 	}
 }

@@ -148,10 +148,11 @@ void Dequeue_SPI_queue_D_mode()
 			
 			SPI_queue_get(&right_IR);
 			USART_Transmit(right_IR, 1);
-			
+
 			SPI_queue_get(&right_IR_back);
 			USART_Transmit(right_IR_back, 1);
 			Right_side_detectable(right_IR, right_IR_back);
+
 			
 			SPI_queue_get(&left_IR);
 			USART_Transmit(left_IR, 1);
