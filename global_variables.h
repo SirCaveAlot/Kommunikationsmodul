@@ -30,6 +30,11 @@ extern bool volatile running;
 extern bool mode_changed;
 
 extern uint8_t competition_mode;
+extern uint8_t next_movement;
+
+extern bool shortest_path_created;
+extern bool nearest_path_driven;
+extern bool nearest_path_driven_back;
 
 extern uint8_t distance_traveled;
 extern uint8_t volatile last_movement;

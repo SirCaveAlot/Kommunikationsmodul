@@ -15,30 +15,58 @@
 #include "global_variables.h"
 #include "SearchAndFind.h"
 
-uint8_t Map_array[15][15] = 
+// uint8_t map_array[15][15] = 
+// 	{
+// 		{5, 6, 7, 8, 9, 5, 6, 7, 8, 9, 5, 6, 7, 8, 9},
+// 		{6, 1, 5, 1, 5, 1, 1, 1, 5, 1, 1, 1, 5, 4, 5},
+// 		{7, 1, 6, 1, 6, 1, 5, 5, 6, 1, 5, 1, 6, 1, 6},
+// 		{8, 1, 7, 1, 7, 1, 1, 1, 7, 1, 6, 1, 7, 1, 7},
+// 		{9, 1, 1, 1, 8, 1, 6, 1, 8, 1, 7, 1, 8, 1, 8},
+// 		{5, 1, 8, 8, 9, 1, 7, 1, 9, 1, 8, 1, 9, 1, 9},
+// 		{6, 1, 9, 1, 1, 1, 8, 1, 5, 1, 9, 1, 5, 1, 5},
+// 		{7, 1, 1, 1, 5, 6, 9, 1, 6, 1, 8, 1, 6, 1, 6},
+// 		{8, 5, 5, 9, 6, 7, 1, 1, 7, 1, 7, 1, 1, 1, 7},
+// 		{9, 1, 1, 1, 1, 1, 1, 6, 8, 1, 6, 5, 7, 1, 8},
+// 		{5, 6, 6, 1, 7, 8, 1, 7, 1, 1, 1, 1, 8, 1, 9},
+// 		{6, 2, 7, 1, 1, 1, 1, 1, 1, 6, 5, 1, 9, 1, 5},
+// 		{7, 1, 8, 1, 8, 9, 5, 1, 9, 5, 1, 1, 8, 1, 6},
+// 		{8, 1, 1, 1, 1, 1, 6, 1, 1, 1, 1, 1, 7, 1, 7},
+// 		{5, 6, 7, 8, 9, 5, 6, 7, 8, 9, 5, 6, 7, 8, 9}
+// 	};
+
+uint8_t Find_y_end_position()
+{
+	for(uint8_t y_position = 0; y_position < 29; y_position++)
 	{
-		{5, 6, 7, 8, 9, 5, 6, 7, 8, 9, 5, 6, 7, 8, 9},
-		{6, 1, 5, 1, 5, 1, 1, 1, 5, 1, 1, 1, 5, 4, 5},
-		{7, 1, 6, 1, 6, 1, 5, 5, 6, 1, 5, 1, 6, 1, 6},
-		{8, 1, 7, 1, 7, 1, 1, 1, 7, 1, 6, 1, 7, 1, 7},
-		{9, 1, 1, 1, 8, 1, 6, 1, 8, 1, 7, 1, 8, 1, 8},
-		{5, 1, 8, 8, 9, 1, 7, 1, 9, 1, 8, 1, 9, 1, 9},
-		{6, 1, 9, 1, 1, 1, 8, 1, 5, 1, 9, 1, 5, 1, 5},
-		{7, 1, 1, 1, 5, 6, 9, 1, 6, 1, 8, 1, 6, 1, 6},
-		{8, 5, 5, 9, 6, 7, 1, 1, 7, 1, 7, 1, 1, 1, 7},
-		{9, 1, 1, 1, 1, 1, 1, 6, 8, 1, 6, 5, 7, 1, 8},
-		{5, 6, 6, 1, 7, 8, 1, 7, 1, 1, 1, 1, 8, 1, 9},
-		{6, 2, 7, 1, 1, 1, 1, 1, 1, 6, 5, 1, 9, 1, 5},
-		{7, 1, 8, 1, 8, 9, 5, 1, 9, 5, 1, 1, 8, 1, 6},
-		{8, 1, 1, 1, 1, 1, 6, 1, 1, 1, 1, 1, 7, 1, 7},
-		{5, 6, 7, 8, 9, 5, 6, 7, 8, 9, 5, 6, 7, 8, 9}
-	};
+		for(uint8_t x_position = 0; x_position < 29; x_position++)
+		{
+			if(map_array[y_position][x_position] == 2)
+			{
+				return y_position;
+			}
+		}
+	}
+	return 0;
+}
 
-
+uint8_t Find_x_end_position()
+{
+	for(uint8_t y_position = 0; y_position < 29; y_position++)
+	{
+		for(uint8_t x_position = 0; x_position < 29; x_position++)
+		{
+			if(map_array[y_position][x_position] == 2)
+			{
+				return x_position;
+			}
+		}
+	}
+	return 0;
+}
 
 bool Check_node_if_wall(uint8_t y_position, uint8_t x_position)
 {
-	if(Map_array[y_position][x_position] >= 5)
+	if(map_array[y_position][x_position] >= 5)
 	{
 		return true;
 	}
@@ -65,7 +93,7 @@ bool Finished()
 	uint8_t y_position = main_node_array[node_counter][0];
 	uint8_t x_position = main_node_array[node_counter][1];
 	
-	return ((node_counter == last_node_counter) | Start_point_found(y_position, x_position));
+	return ((node_counter == last_node_counter) || Start_point_found(y_position, x_position));
 }
 
 void Pathfinder()
@@ -79,6 +107,7 @@ void Pathfinder()
 		Transfer_to_main_array();
 	}
 	Shortest_path_in_main_array();
+	shortest_path_created = true;
 }
 
 bool Start_point_found(uint8_t y_position, uint8_t x_position)
@@ -89,10 +118,3 @@ bool Start_point_found(uint8_t y_position, uint8_t x_position)
 	}
 	return false;
 }
-
-// int main()
-// {
-// 	Main_array_init(11, 1);
-// 	Pathfinder();
-// 	return 0;
-// }

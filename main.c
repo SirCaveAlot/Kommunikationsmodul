@@ -19,10 +19,12 @@
 #include "global_variables.h"
 #include "SearchAndFind.h"
 #include "Positioning.h"
+#include "ShortestPath.h"
+#include "Main_array.h"
 
 // Variables 
 uint8_t data = 0;
-uint8_t next_movement = 0;
+
 uint8_t next_uart = 0;
 uint8_t uart0_received = 0;
 uint8_t next_data = 0;																																																																																	 
@@ -68,10 +70,21 @@ ISR(USART0_RX_vect)
 		}
 		else if (uart0_received == 't')
 		{
-
-			if (robot_pos.x_tile == 14 && (robot_pos.y_tile == 14 || robot_pos.y_tile == 13))
+			if (robot_pos.x_tile == 14 && robot_pos.y_tile == 13)
 			{
 				USART_Transmit('F', 0);
+			}
+			else if (robot_pos.x_tile == 14 && robot_pos.y_tile == 14)
+			{
+				if(Get_robot_direction() == 8)
+				{
+					USART_Transmit('F', 0);
+				}
+				else if(Get_robot_direction() == 2)
+				{
+					Movement_Queue_Put('s');
+				}
+				
 			}
 			else
 			{
@@ -199,18 +212,25 @@ int main(void)
 				// Gustav start
 				
 				case 'C':
-// 				if(competition_mode == 2)
-// 				{
-// 					competition_mode = 3;
-// 					USART_Transmit('C', 0);
-// 				}
-// 				else
-// 				{
+				if(competition_mode == 2)
+				{
+					competition_mode = 3;
+					robot_pos.y_tile = 14;
+					robot_pos.x_tile = 14;
+					robot_pos.x = 0;
+					robot_pos.y = 0;
+					Set_robot_angle_direction(8);
+					USART_Transmit(0, 0);
+					USART_Transmit('C', 0);
+					USART_Transmit(0, 0);
+				}
+				else
+				{
 				competition_mode = 1;
 				
 				Movement_Queue_Put('f');
 				Movement_Queue_Put(15);
-				
+				}
 				break;
 				
 				case 'f':
@@ -367,6 +387,7 @@ int main(void)
 		{
 			Dequeue_SPI_queue_L_mode();
 		}
+		
 		if(competition_mode == 1)
 		{
 			//PORTA = competition_mode;
@@ -374,11 +395,26 @@ int main(void)
 		}
 		else if(competition_mode == 2)
 		{
-			// Fill the remaining tiles
+			// Create shortest path
+			if(!shortest_path_created)
+			{
+				Main_array_init(Find_y_end_position(), Find_x_end_position());
+				Pathfinder();
+				nearest_path_to_array();
+			}
 		}
 		else if(competition_mode == 3)
 		{
+		
 			// Shortest path algorithm
+			if(!nearest_path_driven)
+			{
+				drive_nearest_path();
+			}
+			else if(!nearest_path_driven_back)
+			{
+				drive_back_nearest_path();
+			}
 		}
 	}
 }

@@ -30,13 +30,15 @@ void set_coordinate_in_array(int y, int x, int value);
 
 //void set_coordinate_in_NP_array(int y, int x, int value);
 
+void nearest_path_to_array();
+
 void save_detected_walls_in_array();
 
 void save_detected_outer_wall_in_array();
 
-//bool drive_nearest_path();
+void drive_nearest_path();
 
-//bool drive_back_nearest_path();
+void drive_back_nearest_path();
 
 bool detect_path(int next_yposition,int next_xposition, int value);
 

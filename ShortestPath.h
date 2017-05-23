@@ -19,4 +19,8 @@ void Pathfinder();
 
 bool Start_point_found(uint8_t, uint8_t);
 
+uint8_t Find_y_end_position();
+
+uint8_t Find_x_end_position();
+
 #endif /* SHORTESTPATH_H_ */

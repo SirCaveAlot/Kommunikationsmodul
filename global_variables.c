@@ -39,6 +39,11 @@ int window_size = 10;
 
 int allowed_point_difference_XorY = 10;
 int allowed_point_difference_Corner = 6;
+uint8_t next_movement = 0;
+
+bool shortest_path_created = false;
+bool nearest_path_driven = false;
+bool nearest_path_driven_back = false;
 
 uint8_t map_array[28][29] =
 {

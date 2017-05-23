@@ -20,6 +20,7 @@
 #include "Movement.h"
 #include "UART.h"
 #include "fake_robot_code.h"
+#include "Main_array.h"
 
 uint8_t robot_array[29][29];
 
@@ -27,7 +28,7 @@ uint8_t robot_array[29][29];
 //back at start position?
 bool back_at_start(int yposition,int xposition)
 {
-	if(map_array[yposition][xposition] == 3)
+	if(yposition == 14 && xposition == 14)
 	{
 		//Robot_turn_around(); //turn around (assuming start position was up)
 		return true; // right-lap is finished
@@ -96,85 +97,54 @@ void set_coordinate_in_array(int y, int x, int value) //sets coordinate in array
 //clearly have to turn left
 void robot_keep_right()
 {
-	if(!back_at_start(robot_pos.y_tile, robot_pos.x_tile))
+	if(!running && Movement_queue_empty())
 	{
-		if(!running && Movement_queue_empty())
+		if ((front_side_detected || map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2) && left_side_detected && right_side_detected)
+		{   
+			Calibrate_robot_position();
+			Movement_Queue_Put('l');
+			Movement_Queue_Put(180);
+			Movement_Queue_Put('f');
+			Movement_Queue_Put(15);
+		}
+		else if ((front_side_detected || map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2) && right_side_detected)
 		{
-			if ((front_side_detected || map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2) && left_side_detected && right_side_detected)
-			{   
-				Calibrate_robot_position();
-				Movement_Queue_Put('l');
-				Movement_Queue_Put(180);
-				Movement_Queue_Put('f');
-				Movement_Queue_Put(15);
-			}
-			else if ((front_side_detected || map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2) && right_side_detected)
-			{
-				Calibrate_robot_position();
-				Movement_Queue_Put('l');
-				Movement_Queue_Put(90);
-				Movement_Queue_Put('f');
-				Movement_Queue_Put(15);
-			}
-			else if (right_side_detected)
-			{
-				Movement_Queue_Put('f');
-				Movement_Queue_Put(15);
-			}
-			else if (map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2 && left_side_detected)
-			{
-				Movement_Queue_Put('r');
-				Movement_Queue_Put(90);
-			}
-			else if (map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2)
-			{
-				Movement_Queue_Put('l');
-				Movement_Queue_Put(90);
-				Movement_Queue_Put('f');
-				Movement_Queue_Put(15);
-			}
-			else
-			{
-				//Calibrate_robot_position();
-				Movement_Queue_Put('L');
-				Movement_Queue_Put('r');
-				Movement_Queue_Put(90);
-				Movement_Queue_Put('f');
-				Movement_Queue_Put(15);
-			}
-// 			if(!front_side_detected && !left_side_detected && right_side_detected) //as long as we have wall to the right
-// 			{
-// 				Movement_Queue_Put('f');
-// 				Movement_Queue_Put(15);
-// 			}
-// 			else if(front_side_detected && !left_side_detected && right_side_detected)
-// 			{
-// 				Movement_Queue_Put('l');
-// 				Movement_Queue_Put(90);
-// 				Movement_Queue_Put('f');
-// 				Movement_Queue_Put(15);
-// 			}
-// 			else if(left_side_detected && right_side_detected)
-// 			{
-// 				Movement_Queue_Put('r');
-// 				Movement_Queue_Put(180);
-// 				Movement_Queue_Put('f');
-// 				Movement_Queue_Put(15);
-// 			}
-// 			else if(!right_side_detected)
-// 			{
-// 				Movement_Queue_Put('L');
-// 				Movement_Queue_Put('r');
-// 				Movement_Queue_Put(90);
-// 				Movement_Queue_Put('f');
-// 				Movement_Queue_Put(15);
-// 			}
+			Calibrate_robot_position();
+			Movement_Queue_Put('l');
+			Movement_Queue_Put(90);
+			Movement_Queue_Put('f');
+			Movement_Queue_Put(15);
+		}
+		else if (right_side_detected)
+		{
+			Movement_Queue_Put('f');
+			Movement_Queue_Put(15);
+		}
+		else if (map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2 && left_side_detected)
+		{
+			Movement_Queue_Put('r');
+			Movement_Queue_Put(90);
+		}
+		else if (map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2)
+		{
+			Movement_Queue_Put('l');
+			Movement_Queue_Put(90);
+			Movement_Queue_Put('f');
+			Movement_Queue_Put(15);
+		}
+		else
+		{
+			//Calibrate_robot_position();
+			Movement_Queue_Put('L');
+			Movement_Queue_Put('r');
+			Movement_Queue_Put(90);
+			Movement_Queue_Put('f');
+			Movement_Queue_Put(15);
 		}
 	}
-	else
+	if(next_movement == 's')
 	{
 		competition_mode = 2;
-		USART_Transmit('C', 0);
 	}
 }
 
@@ -237,12 +207,12 @@ int gurras_array[20][3] = //example of what gurras_array might look like
 void nearest_path_to_array() //takes the coordinates from gurras_array and puts it in nearest_path_array[29][29]
 {
 	int m = 0;
-	while(gurras_array[m][2] != 0)
+	while(main_node_array[m][2] != 0)
 	{
-		nearest_path_array[gurras_array[m][0]][gurras_array[m][1]] = 3;
+		nearest_path_array[main_node_array[m][0]][main_node_array[m][1]] = 3;
 		m++;
 	}
-	nearest_path_array[gurras_array[m][0]][gurras_array[m][1]] = 3;
+	nearest_path_array[main_node_array[m][0]][main_node_array[m][1]] = 3;
 	
 }
 
@@ -270,7 +240,7 @@ void nearest_path_to_array() //takes the coordinates from gurras_array and puts 
 
 bool detect_path(int next_yposition,int next_xposition, int value) //detects if coordinate is given path coordinate
 {
-	nearest_path_to_array();
+/*	nearest_path_to_array();*/
 	if(nearest_path_array[next_yposition][next_xposition] == value)
 	{
 		return true;
@@ -294,7 +264,7 @@ void set_coordinate_in_NP_array(int y, int x, int value) //sets coordinate in ne
 
 
 
-bool drive_nearest_path() //follows given path from gurras_array
+void drive_nearest_path() //follows given path from gurras_array
 {
 	uint8_t steps = 0;
 	while(detect_path(y_positions_forward(Get_robot_direction(), steps + 1), x_positions_forward(Get_robot_direction(), steps + 1), 3))
@@ -310,7 +280,6 @@ bool drive_nearest_path() //follows given path from gurras_array
 		//robot_move_distance(steps);
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(steps);
-		return false;
 	}
 	else if(detect_path(right_y_pos(), right_x_pos(), 3))
 	{
@@ -318,7 +287,6 @@ bool drive_nearest_path() //follows given path from gurras_array
 		//robot_turn_right();
 		Movement_Queue_Put('r');
 		Movement_Queue_Put(90);
-		return false;
 	}
 	else if(detect_path(left_y_pos(), left_x_pos(), 3))
 	{
@@ -326,18 +294,20 @@ bool drive_nearest_path() //follows given path from gurras_array
 		//robot_turn_left();
 		Movement_Queue_Put('l');
 		Movement_Queue_Put(90);
-		return false;
 	}
 	else
 	{
 		//turn around
-		return true;
+		nearest_path_driven = true;
+		USART_Transmit(0, 0);
+		USART_Transmit('o', 0);
+		USART_Transmit(0, 0);
 	}
 
 }
 
 
-bool drive_back_nearest_path() //drives the same way back, drives_nearest_path need to be finished when starting this function
+void drive_back_nearest_path() //drives the same way back, drives_nearest_path need to be finished when starting this function
 {
 	int steps = 0;
 	while(detect_path(y_positions_forward(Get_robot_direction(), steps + 1), x_positions_forward(Get_robot_direction(), steps + 1), 1))
@@ -349,25 +319,22 @@ bool drive_back_nearest_path() //drives the same way back, drives_nearest_path n
 		//robot_move_distance(steps);
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(steps);
-		return false;
 	}
 	else if(detect_path(right_y_pos(), right_x_pos(), 1))
 	{
 		Movement_Queue_Put('r');
 		Movement_Queue_Put(90);
 		//robot_turn_right();
-		return false;
 	}
 	else if(detect_path(left_y_pos(), left_x_pos(), 1))
 	{
 		//robot_turn_left();
 		Movement_Queue_Put('l');
 		Movement_Queue_Put(90);
-		return false;
 	}
 	else
 	{
-		return true;
+		nearest_path_driven_back = true;
 	}
 
 }
