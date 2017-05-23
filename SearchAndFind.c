@@ -140,11 +140,11 @@ void set_coordinate_in_array(int y, int x, int value) //sets coordinate in array
 //clearly have to turn left
 void robot_keep_right()
 {
-	if(!back_at_start(ypos, xpos))
+	if(!back_at_start(Get_robot_tile_y(), Get_robot_tile_x()))
 	{
 		if(!running && Movement_queue_empty())
 		{
-			if (front_side_detected && left_side_detected && right_side_detected)
+			if ((front_side_detected || map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2) && left_side_detected && right_side_detected)
 			{   
 				Calibrate_robot_position();
 				Movement_Queue_Put('r');
@@ -152,7 +152,7 @@ void robot_keep_right()
 				Movement_Queue_Put('f');
 				Movement_Queue_Put(15);
 			}
-			else if (front_side_detected && right_side_detected)
+			else if ((front_side_detected || map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2) && right_side_detected)
 			{
 				Calibrate_robot_position();
 				Movement_Queue_Put('l');
@@ -165,9 +165,21 @@ void robot_keep_right()
 				Movement_Queue_Put('f');
 				Movement_Queue_Put(15);
 			}
+			else if (map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2 && left_side_detected)
+			{
+				Movement_Queue_Put('r');
+				Movement_Queue_Put(90);
+			}
+			else if (map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2)
+			{
+				Movement_Queue_Put('l');
+				Movement_Queue_Put(90);
+				Movement_Queue_Put('f');
+				Movement_Queue_Put(15);
+			}
 			else
 			{
-				//Calibrate_robot_position§1§§§§§§§§§§§§§§§§§();
+				//Calibrate_robot_position();
 				Movement_Queue_Put('L');
 				Movement_Queue_Put('r');
 				Movement_Queue_Put(90);

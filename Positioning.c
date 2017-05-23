@@ -12,6 +12,7 @@
 #include "Positioning.h"
 #include "SearchAndFind.h"
 #include "mapping.h"
+#include "global_variables.h"
 
 #define up 8
 #define down 2
@@ -159,8 +160,7 @@ void turn_around()
 //calculates next pos (general)
 int8_t next_y_position(int8_t next_direction)
 {
-	int8_t next_ypos;
-	next_ypos = ypos;
+	int8_t next_ypos = robot_pos.y_tile;
 	
 	if(next_direction == up)
 	{
@@ -175,8 +175,7 @@ int8_t next_y_position(int8_t next_direction)
 
 int8_t next_x_position(int8_t next_direction)
 {
-	int8_t next_xpos;
-	next_xpos = xpos;
+	int8_t next_xpos = robot_pos.x_tile;
 	
 	if(next_direction == right)
 	{

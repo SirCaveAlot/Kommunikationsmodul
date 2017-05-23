@@ -58,6 +58,12 @@ ISR(USART0_RX_vect)
 	{
 		if (uart0_received == 'd')
 		{
+			if (last_movement == 'b')
+			{
+				Robot_turn_around();
+				last_movement = 'f';
+				Set_peepz_in_da_needz();
+			}
 			running = false;
 		}
 		else if (uart0_received == 't')
@@ -69,7 +75,6 @@ ISR(USART0_RX_vect)
 			else
 			{
 				last_movement = 'b';
-				Set_peepz_in_da_needz();
 				USART_Transmit('B', 0);
 			}
 		}
