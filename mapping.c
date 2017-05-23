@@ -369,8 +369,8 @@ void Set_peepz_in_da_needz()
 	uint8_t peep_x = robot_pos.x % 40;
 	uint8_t peep_y = robot_pos.y % 40;*/
 	
-	uint8_t peep_x = robot_pos.x_tile;
-	uint8_t peep_y = robot_pos.y_tile;
+	uint8_t volatile peep_x = robot_pos.x_tile;
+	uint8_t volatile peep_y = robot_pos.y_tile;
 	
 	if (Get_robot_direction() == 8)
 	{

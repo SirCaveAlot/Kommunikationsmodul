@@ -18,14 +18,14 @@ uint8_t right_IR_back = 0;
 uint8_t front_IR = 0;
 uint8_t distance_traveled = 0;
 
-uint8_t last_movement = 0;
+uint8_t volatile last_movement = 0;
 
 int distance_counter = 0;
 int angle_counter = 0;
 
 bool pc_ready = false;
 bool auto_control = false;
-bool running = false;
+bool volatile running = false;
 bool mode_changed = false;
 
 uint8_t competition_mode = 0;

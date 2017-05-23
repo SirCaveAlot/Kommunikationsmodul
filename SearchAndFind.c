@@ -96,11 +96,7 @@ void set_coordinate_in_array(int y, int x, int value) //sets coordinate in array
 //clearly have to turn left
 void robot_keep_right()
 {
-<<<<<<< HEAD
-	if(!back_at_start(Get_robot_tile_y(), Get_robot_tile_x()))
-=======
 	if(!back_at_start(robot_pos.y_tile, robot_pos.x_tile))
->>>>>>> origin/master
 	{
 		if(!running && Movement_queue_empty())
 		{

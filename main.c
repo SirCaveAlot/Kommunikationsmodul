@@ -58,7 +58,7 @@ ISR(USART0_RX_vect)
 	{
 		if (uart0_received == 'd')
 		{
-			if (last_movement == 'b')
+			if(last_movement == 'b')
 			{
 				Robot_turn_around();
 				last_movement = 'f';
