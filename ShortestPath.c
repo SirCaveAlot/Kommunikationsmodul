@@ -34,6 +34,8 @@ uint8_t Map_array[15][15] =
 		{5, 6, 7, 8, 9, 5, 6, 7, 8, 9, 5, 6, 7, 8, 9}
 	};
 
+
+
 bool Check_node_if_wall(uint8_t y_position, uint8_t x_position)
 {
 	if(Map_array[y_position][x_position] >= 5)
@@ -81,7 +83,7 @@ void Pathfinder()
 
 bool Start_point_found(uint8_t y_position, uint8_t x_position)
 {
-	if(y_position == start_position_y && x_position == start_position_x)
+	if(y_position == 14 && x_position == 14) // Start position
 	{
 		return true;
 	}

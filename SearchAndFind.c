@@ -103,7 +103,7 @@ void robot_keep_right()
 			if ((front_side_detected || map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2) && left_side_detected && right_side_detected)
 			{   
 				Calibrate_robot_position();
-				Movement_Queue_Put('r');
+				Movement_Queue_Put('l');
 				Movement_Queue_Put(180);
 				Movement_Queue_Put('f');
 				Movement_Queue_Put(15);

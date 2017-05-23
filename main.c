@@ -75,6 +75,7 @@ ISR(USART0_RX_vect)
 			}
 			else
 			{
+				Robot_turn_around();
 				last_movement = 'b';
 				USART_Transmit('B', 0);
 			}
@@ -301,12 +302,6 @@ int main(void)
 					{
 						if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
 						{
-							
-							
-							if(last_movement == 'b' && next_movement != 'b')
-							{
-								Robot_turn_around();
-							}
 							last_movement = next_movement;
 							if (next_movement == 'r')
 							{
@@ -344,10 +339,6 @@ int main(void)
 				Movement_Queue_Get(&next_movement);
 				if(next_movement == 'f' || next_movement == 'l' || next_movement == 'r' || next_movement == 'b')
 				{
-					if(last_movement == 'b' && next_movement != 'b')
-					{
-						Robot_turn_around();
-					}
 					last_movement = next_movement;
 					if (next_movement == 'r')
 					{
