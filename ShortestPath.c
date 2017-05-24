@@ -108,6 +108,7 @@ void Pathfinder()
 	}
 	Shortest_path_in_main_array();
 	shortest_path_created = true;
+	PORTA = competition_mode;
 }
 
 bool Start_point_found(uint8_t y_position, uint8_t x_position)
