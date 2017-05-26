@@ -142,10 +142,10 @@ void robot_keep_right()
 			Movement_Queue_Put(15);
 		}
 	}
-	if(next_movement == 's')
-	{
-		competition_mode = 2;
-	}
+// 	if(next_movement == 's')
+// 	{
+// 		competition_mode = 2;
+// 	}
 }
 
 
@@ -275,48 +275,50 @@ void drive_nearest_path() //follows given path from gurras_array
 		}
 		steps++;
 	}
-	if(steps > 0)
+	if(map_array[robot_pos.y_tile][robot_pos.x_tile] == 2)
 	{
-		//robot_move_distance(steps);
+		Movement_Queue_Put('o');
+		nearest_path_driven = true;
+	}
+	else if(steps > 0)
+	{
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(steps);
 	}
 	else if(detect_path(right_y_pos(), right_x_pos(), 3))
 	{
-		//set_coordinate_in_NP_array(ypos, xpos, 1);
-		//robot_turn_right();
 		Movement_Queue_Put('r');
 		Movement_Queue_Put(90);
 	}
 	else if(detect_path(left_y_pos(), left_x_pos(), 3))
 	{
-		//set_coordinate_in_NP_array(ypos, xpos, 1);
-		//robot_turn_left();
 		Movement_Queue_Put('l');
 		Movement_Queue_Put(90);
 	}
-	else
-	{
-		//turn around
-		nearest_path_driven = true;
-		USART_Transmit(0, 0);
-		USART_Transmit('o', 0);
-		USART_Transmit(0, 0);
-	}
-
 }
 
 
 void drive_back_nearest_path() //drives the same way back, drives_nearest_path need to be finished when starting this function
 {
 	int steps = 0;
+	if(robot_pos.y_tile == 14 && robot_pos.x_tile == 14)
+	{
+		nearest_path_driven_back = true;
+		return;
+	}
 	while(detect_path(y_positions_forward(Get_robot_direction(), steps + 1), x_positions_forward(Get_robot_direction(), steps + 1), 1))
 	{
+		if(steps > 15)
+		{
+			nearest_path_driven_back = true;
+			Movement_Queue_Put('f');
+			Movement_Queue_Put(15);
+			return;
+		}
 		steps++;
 	}
 	if(steps > 0)
 	{
-		//robot_move_distance(steps);
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(steps);
 	}
@@ -324,7 +326,6 @@ void drive_back_nearest_path() //drives the same way back, drives_nearest_path n
 	{
 		Movement_Queue_Put('r');
 		Movement_Queue_Put(90);
-		//robot_turn_right();
 	}
 	else if(detect_path(left_y_pos(), left_x_pos(), 1))
 	{
@@ -332,9 +333,10 @@ void drive_back_nearest_path() //drives the same way back, drives_nearest_path n
 		Movement_Queue_Put('l');
 		Movement_Queue_Put(90);
 	}
-	else
+	else if(detect_path(back_y_pos(), back_x_pos(), 1))
 	{
-		nearest_path_driven_back = true;
+		Movement_Queue_Put('l');
+		Movement_Queue_Put(180);
 	}
 
 }

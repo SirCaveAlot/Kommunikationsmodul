@@ -28,7 +28,7 @@ bool auto_control = false;
 bool volatile running = false;
 bool mode_changed = false;
 
-uint8_t competition_mode = 0;
+volatile uint8_t competition_mode = 0;
 
 coordinates robot_pos;
 

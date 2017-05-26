@@ -29,7 +29,7 @@ extern bool auto_control;
 extern bool volatile running;
 extern bool mode_changed;
 
-extern uint8_t competition_mode;
+extern volatile uint8_t competition_mode;
 extern uint8_t next_movement;
 
 extern bool shortest_path_created;

@@ -82,11 +82,12 @@ ISR(USART0_RX_vect)
 				}
 				else if(Get_robot_direction() == 2)
 				{
+					competition_mode = 2;
 					Movement_Queue_Put('s');
-				}
-				
+					running = false;
+				}	
 			}
-			else
+			else if(competition_mode == 1)
 			{
 				Robot_turn_around();
 				last_movement = 'b';
@@ -215,19 +216,21 @@ int main(void)
 				if(competition_mode == 2)
 				{
 					competition_mode = 3;
+					PORTA = competition_mode;
 					robot_pos.y_tile = 14;
 					robot_pos.x_tile = 14;
 					robot_pos.x = 0;
 					robot_pos.y = 0;
 					Set_robot_angle_direction(8);
-					USART_Transmit(0, 0);
-					USART_Transmit('C', 0);
-					USART_Transmit(0, 0);
+					//Movement_Queue_Put('C');
+// 					USART_Transmit(0, 0);
+					//USART_Transmit('C', 0);
+// 					USART_Transmit(0, 0);
 				}
 				else
 				{
 				competition_mode = 1;
-				
+				//USART_Transmit('C', 0);
 				Movement_Queue_Put('f');
 				Movement_Queue_Put(15);
 				}
@@ -307,6 +310,7 @@ int main(void)
 				{
 					Movement_Queue_Get(&next_movement);
 					PORTA = next_movement;
+					
 					if(next_movement == 'L')
 					{
 						mode_changed = true;
@@ -407,11 +411,11 @@ int main(void)
 		{
 		
 			// Shortest path algorithm
-			if(!nearest_path_driven)
+			if(!nearest_path_driven && !running)
 			{
 				drive_nearest_path();
 			}
-			else if(!nearest_path_driven_back)
+			else if(!nearest_path_driven_back && nearest_path_driven && !running)
 			{
 				drive_back_nearest_path();
 			}
