@@ -113,34 +113,7 @@ void Simulation()
 
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(3);
-/*		
-		Movement_Queue_Put('l');
-		Movement_Queue_Put(90);
-		Movement_Queue_Put('f');
-		Movement_Queue_Put(3);
-		Movement_Queue_Put('l');
-		Movement_Queue_Put(90);
-		Movement_Queue_Put('f');
-		Movement_Queue_Put(3);
-		Movement_Queue_Put('l');
-		Movement_Queue_Put(90);
-		Movement_Queue_Put('f');
-		Movement_Queue_Put(3);
-		Movement_Queue_Put('l');
-		Movement_Queue_Put(90);
-*/
-//		Movement_Queue_Put('L');
 
-
-				
-// 		Movement_Queue_Put('b');
-// 		Movement_Queue_Put(3);
-// 		Movement_Queue_Put('l');
-// 		Movement_Queue_Put(90);
-// 		Movement_Queue_Put('r');
-// 		Movement_Queue_Put(90);
-// 		Movement_Queue_Put('f');
-// 		Movement_Queue_Put(1);
 	}
 }
 //
@@ -155,7 +128,6 @@ int main(void)
 	robot_pos.angle = 0;
 	robot_pos.x_tile = 14;
 	robot_pos.y_tile = 14;
-	
 	
     Spi_init();		//Initialize slave SPI
 	Movement_Queue_Init();
@@ -409,7 +381,6 @@ int main(void)
 		}
 		else if(competition_mode == 3)
 		{
-		
 			// Shortest path algorithm
 			if(!nearest_path_driven && !running)
 			{
