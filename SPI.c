@@ -140,34 +140,42 @@ void Dequeue_SPI_queue_D_mode()
 		uint8_t last_byte = 0;
 		if(mode == 'D')
 		{	
-			
+			// 0xFFFF
 			SPI_queue_get(&last_byte);
 			USART_Transmit(last_byte, 1);
 			SPI_queue_get(&last_byte);
 			USART_Transmit(last_byte, 1);
 			
+			// Right IR
 			SPI_queue_get(&right_IR);
 			USART_Transmit(right_IR, 1);
-
+			
+			// Right IR back
 			SPI_queue_get(&right_IR_back);
 			USART_Transmit(right_IR_back, 1);
 			Right_side_detectable(right_IR, right_IR_back);
 
-			
+			// Left IR
 			SPI_queue_get(&left_IR);
 			USART_Transmit(left_IR, 1);
-			Left_side_detectable(left_IR);
 			
-			//forward IR
+			// Left IR back
+			SPI_queue_get(&left_IR_back);
+			USART_Transmit(left_IR_back, 1);
+			Left_side_detectable(left_IR, left_IR_back);
+			
+			// Forward IR
 			SPI_queue_get(&front_IR);
 			USART_Transmit(front_IR, 1);
 			Front_side_detectable(front_IR);
 			
+			// Tape
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
 			
+			// Wheel
 			SPI_queue_get(&distance_traveled);
 			distance_traveled = Wheelshifts_to_distance(distance_traveled);
 			distance_traveled = (distance_traveled + Wheelshifts_to_distance(SPI_queue_peek(SPI_queue_out))) / 2;
@@ -181,19 +189,22 @@ void Dequeue_SPI_queue_D_mode()
 			    Set_tile_from_ir();
 	
 			}
-						
+			
+			// Robot position			
 			USART_Transmit((uint8_t)(robot_pos.x >> 8), 1);
 			USART_Transmit((uint8_t)(robot_pos.x), 1);
 			USART_Transmit((uint8_t)(robot_pos.y >> 8), 1);
 			USART_Transmit((uint8_t)(robot_pos.y), 1);
 			
 			distance_traveled = 0;
-
+			
+			// LIDAR distance
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
 			
+			// LIDAR angle
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);

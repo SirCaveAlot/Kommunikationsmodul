@@ -208,9 +208,9 @@ void Right_side_detectable(uint8_t IR_data, uint8_t IR_back_data)
 	}
 }
 
-void Left_side_detectable(uint8_t IR_data)
+void Left_side_detectable(uint8_t IR_data, uint8_t IR_back_data)
 {
-	if(IR_data >= 67)
+	if(IR_data >= 67 && IR_back_data >= 67)
 	{
 		left_side_detected = true;
 	}

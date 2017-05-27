@@ -18,7 +18,7 @@ void update_robot_position(uint16_t nr_of_wheel_shifts);
 uint8_t Get_robot_tile_x();
 uint8_t Get_robot_tile_y();
 void Right_side_detectable(uint8_t IR_data, uint8_t IR_back_data);
-void Left_side_detectable(uint8_t IR_data);
+void Left_side_detectable(uint8_t IR_data, uint8_t IR_back_data);
 void Front_side_detectable(uint8_t IR_data);
 void Set_tile_from_ir();
 void Set_peepz_in_da_needz();

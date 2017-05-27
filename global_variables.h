@@ -17,6 +17,7 @@ extern volatile uint8_t angle_array[4000];
 extern uint8_t mode;
 
 extern uint8_t left_IR;
+extern uint8_t left_IR_back;
 extern uint8_t right_IR;
 extern uint8_t right_IR_back;
 extern uint8_t front_IR;

@@ -13,6 +13,7 @@
 
 uint8_t mode = 'D';
 uint8_t left_IR = 0;
+uint8_t left_IR_back = 0;
 uint8_t right_IR = 0;
 uint8_t right_IR_back = 0;
 uint8_t front_IR = 0;
