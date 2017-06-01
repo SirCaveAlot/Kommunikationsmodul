@@ -2,7 +2,8 @@
  * fake_robot_code.c
  *
  * Created: 5/22/2017 6:38:56 PM
- *  Author: jakpa844
+ *  Author: Gustaf Westerholm guswe541
+
  */ 
 
 //THIS CODE IS USED TO FIND OUTER WALLS. HERE CHANGES IN DIRECTIONS AND POSITIONS DOES NOT AFFECT THE ACTUAL ROBOT
