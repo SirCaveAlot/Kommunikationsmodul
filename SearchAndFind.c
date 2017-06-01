@@ -2,7 +2,9 @@
  * SearchAndFind.c
  *
  * Created: 5/12/2017 2:53:12 PM
- *  Author: marwa079
+ *  Author: Gustaf Westerholm guswe541
+            Hugo Willfors Bolin huge426
+	    Gustav Strandberg gusst967
  */ 
 
 #define up 8
