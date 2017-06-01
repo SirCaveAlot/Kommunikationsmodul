@@ -64,6 +64,7 @@ bool detect_wall(int next_yposition,int next_xposition)
 	
 }
 
+//detects outer walls
 bool detect_outer_wall(int next_yposition,int next_xposition)
 {
 	if(next_yposition < 0 || next_xposition < 0)
@@ -85,7 +86,7 @@ bool detect_outer_wall(int next_yposition,int next_xposition)
 	
 }
 
-
+//sets coordinate in array
 void set_coordinate_in_array(int y, int x, int value) //sets coordinate in array to value
 {
 	robot_array[y][x] = value;
@@ -149,7 +150,7 @@ void robot_keep_right()
 }
 
 
-
+//Fins first undiscovered tile inside the outer walls
 void find_first_undiscovered_tile_x()
 {
 	uint8_t y_position = 1; // y_position defined from upper left corner and down.
@@ -195,16 +196,7 @@ void find_first_undiscovered_tile_x()
 
 int nearest_path_array[29][29]; //contains the coordinates with the nearest path
 
-int gurras_array[20][3] = //example of what gurras_array might look like
-{
-	{14, 14, 4} ,
-	{13, 14, 3} ,
-	{13, 15, 2} ,
-	{12, 15, 1} ,
-	{11, 15, 0} 
-};
-
-void nearest_path_to_array() //takes the coordinates from gurras_array and puts it in nearest_path_array[29][29]
+void nearest_path_to_array() //takes the coordinates from main_node_array and puts it in nearest_path_array[29][29]
 {
 	int m = 0;
 	while(main_node_array[m][2] != 0)
@@ -216,27 +208,6 @@ void nearest_path_to_array() //takes the coordinates from gurras_array and puts 
 	
 }
 
-
-// bool detect_outer_wall(int next_yposition,int next_xposition)
-// {
-// 	if(next_yposition < 0 || next_xposition < 0)
-// 	{
-// 		return false;
-// 	}
-// 	else if(map_array[next_yposition][next_xposition] == 5)
-// 	{
-// 		return true;
-// 	}
-// 	else if(map_array[next_yposition][next_xposition] == 4)
-// 	{
-// 		return true;
-// 	}
-// 	else
-// 	{
-// 		return false;
-// 	}
-// 	
-// }
 
 bool detect_path(int next_yposition,int next_xposition, int value) //detects if coordinate is given path coordinate
 {
@@ -252,11 +223,7 @@ bool detect_path(int next_yposition,int next_xposition, int value) //detects if 
 	
 }
 
-// void set_coordinate_in_array(int y, int x, int value) //sets coordinate in array to value
-// {
-// 	robot_array[y][x] = value;
-// }
-
+//sets a coordinate in NP_array
 void set_coordinate_in_NP_array(int y, int x, int value) //sets coordinate in nearest_path_array to value
 {
 	nearest_path_array[y][x] = value;
@@ -355,19 +322,7 @@ void drive_back_nearest_path() //drives the same way back, drives_nearest_path n
 
 }
 
-// void drive_to_distressed_and_return()
-// {
-// 	if(finished_with_drive_nearest_path)
-// 	{
-// 		//leave something for distressed
-// 		drive_back_nearest_path();
-// 	}
-// 	else
-// 	{
-// 		drive_nearest_path();
-// 	}
-// }
-
+//detects outer walls by driving fake robot a right lap on the walls found from the first right lap, not used
 void robot_detect_outer_walls()
 {
 	fake_robot_turn_left();
@@ -415,6 +370,7 @@ void robot_detect_outer_walls()
 	find_unknown_cells_after_detection_of_outer_walls();
 }
 
+//finds and saves the unknown cells inside the outer walls
 void find_unknown_cells_after_detection_of_outer_walls() //finds unknowns cells inside detected outer walls after robot_keep_right and sets them to 1 inside the undiscovered_tiles_array
 {
 	int m = 0; //use robot array instead of map array when working
