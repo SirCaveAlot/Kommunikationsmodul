@@ -2,7 +2,9 @@
  * SearchAndFind.h
  *
  * Created: 5/12/2017 2:53:24 PM
- *  Author: marwa079
+ *  Author: Gustaf Westerholm guswe541
+            Hugo Willfors Bolin huge426
+	          Gustav Strandberg gusst967
  */ 
 
 
