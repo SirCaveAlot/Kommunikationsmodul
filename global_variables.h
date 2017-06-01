@@ -2,7 +2,7 @@
  * global_variables.h
  *
  * Created: 5/3/2017 9:06:29 AM
- *  Author: andan879
+ *  Author: Andreas Andersson, andan879
  */ 
 
 #include <stdint.h>

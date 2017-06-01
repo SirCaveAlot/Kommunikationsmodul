@@ -2,7 +2,7 @@
  * matchtile.h
  *
  * Created: 4/25/2017 10:47:35 AM
- *  Author: andan879
+ *  Author: Andreas Andersson, andan879
  */ 
 #include "global_variables.h"
 

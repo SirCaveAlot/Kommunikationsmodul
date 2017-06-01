@@ -2,7 +2,7 @@
  * mapping.h
  *
  * Created: 5/11/2017 10:56:34 AM
- *  Author: andan879
+ *  Author: Andreas Andersson, andan879
  */ 
 
 #ifndef MAPPING_H_
