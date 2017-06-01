@@ -19,8 +19,8 @@
 #define left 4
 #define right 6
 
-
-void Robot_turn_right()
+//always turning right in relation to where it's heading
+void Robot_turn_right()  
 {
 	if(Get_robot_direction() == up)
 	{
@@ -61,6 +61,7 @@ void Robot_turn_left()
 	}
 }
 
+//always turning around in relation to where it's heading
 void Robot_turn_around()
 {
 	if(Get_robot_direction() == up)
@@ -81,12 +82,13 @@ void Robot_turn_around()
 	}
 }
 
+//sets direction
 void Robot_set_direction(uint8_t next_direction)
 {
 	Set_robot_angle_direction(next_direction);
 }
 
-//calculates next pos (general)
+//calculates next y position
 int8_t next_y_position(int8_t next_direction)
 {
 	int8_t next_ypos = robot_pos.y_tile;
@@ -102,6 +104,7 @@ int8_t next_y_position(int8_t next_direction)
 	return next_ypos;
 }
 
+//calculates next x position
 int8_t next_x_position(int8_t next_direction)
 {
 	int8_t next_xpos = robot_pos.x_tile;
@@ -180,6 +183,7 @@ int8_t left_y_pos()
 	return left_y_pos;
 }
 
+//position to the back of the robot x coordinates
 int8_t back_x_pos()
 {
 	int8_t back_x_pos = robot_pos.x_tile;
@@ -195,6 +199,7 @@ int8_t back_x_pos()
 	return back_x_pos;
 }
 
+//position to the back of the robot y coordinates
 int8_t back_y_pos()
 {
 	int8_t back_y_pos = robot_pos.y_tile;
@@ -209,6 +214,7 @@ int8_t back_y_pos()
 	return back_y_pos;
 }
 
+//position to the left forward of the robot x coordinates
 int8_t forward_to_left_x_pos()
 {
 	int8_t forward_to_left_x_pos = robot_pos.x_tile;
@@ -231,6 +237,7 @@ int8_t forward_to_left_x_pos()
 	return forward_to_left_x_pos;
 }
 
+//position to the left forward of the robot y coordinates
 int8_t forward_to_left_y_pos()
 {
 	int8_t forward_to_left_y_pos = robot_pos.y_tile;
@@ -253,6 +260,7 @@ int8_t forward_to_left_y_pos()
 	return forward_to_left_y_pos;
 }
 
+//calculates next y position a certain number of steps forward
 uint8_t y_positions_forward(uint8_t next_direction, uint8_t steps_forward)
 {
 	uint8_t next_ypos = robot_pos.y_tile;
@@ -266,7 +274,7 @@ uint8_t y_positions_forward(uint8_t next_direction, uint8_t steps_forward)
 	}
 	return next_ypos;
 }
-
+//calculates next x position a certain number of steps forward
 uint8_t x_positions_forward(uint8_t next_direction, uint8_t steps_forward)
 {
 	int8_t next_xpos = robot_pos.x_tile;
