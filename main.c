@@ -66,6 +66,7 @@ ISR(USART0_RX_vect)
 				last_movement = 'f';
 				Set_peepz_in_da_needz();
 			}
+			Calibrate_robot_position();
 			running = false;
 		}
 		else if (uart0_received == 't')
@@ -143,7 +144,7 @@ int main(void)
 		
 		if(mode == 'S')
 		{
-			Calibrate_robot_position();
+			//Calibrate_robot_position();
 			Window();
 			if(pc_ready)
 			{
@@ -188,7 +189,7 @@ int main(void)
 				if(competition_mode == 2)
 				{
 					competition_mode = 3;
-					PORTA = competition_mode;
+					//PORTA = competition_mode;
 					robot_pos.y_tile = 14;
 					robot_pos.x_tile = 14;
 					robot_pos.x = 0;
@@ -282,14 +283,13 @@ int main(void)
 				{
 					Movement_Queue_Get(&next_movement);
 					PORTA = next_movement;
-					
 					if(next_movement == 'L')
 					{
 						mode_changed = true;
 						running = true;
 					}
 					USART_Transmit(0, 0);
-					if(next_movement == 'A' || next_movement == 'L' || next_movement == 's' || next_movement == 'S' || next_movement == 'C')
+					if(next_movement == 'A' || next_movement == 'L' || next_movement == 's' || next_movement == 'S' || next_movement == 'C' || next_movement == 'o' || next_movement == 'c')
 					{
 						USART_Transmit(next_movement, 0);
 						USART_Transmit(0, 0);
@@ -314,6 +314,7 @@ int main(void)
 						}
 						USART_Transmit(next_movement, 0);
 						Movement_Queue_Get(&next_movement);
+						//PORTA = next_movement;
 						if(next_movement == 180)
 						{
 							if(last_movement == 'l')

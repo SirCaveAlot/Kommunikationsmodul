@@ -47,7 +47,7 @@ int Get_tile(int xcoord, int ycoord)
 
 void Set_tile(uint8_t xcoord, uint8_t ycoord, uint8_t newTile)
 {
-	if((xcoord<0) || (ycoord < 0) || (xcoord>29) || (ycoord>29))
+	if((xcoord < 0) || (ycoord < 0) || (xcoord > 29) || (ycoord > 29) || map_array[ycoord][xcoord] == 2)
 	{
 		return;
 	}

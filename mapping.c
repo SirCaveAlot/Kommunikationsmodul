@@ -250,15 +250,16 @@ void Set_tile_from_ir()
 		{
 			Set_tile(robot_pos.x_tile - 1, robot_pos.y_tile, 255); // Check tile value. Wall tile
 		}
-		else
+		else /*if(map_array[robot_pos.y_tile][robot_pos.x_tile - 1] != 2)*/
 		{
 			Set_tile(robot_pos.x_tile - 1, robot_pos.y_tile, 1); // Check tile value. Open tile
 		}
+		
 		if(right_side_detected)
 		{
 			Set_tile(robot_pos.x_tile + 1, robot_pos.y_tile, 255); // Check tile value. Wall tile
 		}
-		else
+		else /*if(map_array[robot_pos.y_tile][robot_pos.x_tile + 1] != 2)*/
 		{
 			Set_tile(robot_pos.x_tile + 1, robot_pos.y_tile, 1); // Check tile value. Open tile
 		}
@@ -279,15 +280,16 @@ void Set_tile_from_ir()
 		{
 			Set_tile(robot_pos.x_tile, robot_pos.y_tile - 1, 255); // Check tile value. Wall tile
 		}
-		else
+		else/* if(map_array[robot_pos.y_tile - 1][robot_pos.y_tile] != 2)*/
 		{
 			Set_tile(robot_pos.x_tile, robot_pos.y_tile - 1, 1); // Check tile value. Open tile
 		}
+		
 		if(right_side_detected)
 		{
 			Set_tile(robot_pos.x_tile, robot_pos.y_tile + 1, 255); // Check tile value. Wall tile
 		}
-		else
+		else /*if(map_array[robot_pos.y_tile + 1][robot_pos.x_tile] != 2)*/
 		{
 			Set_tile(robot_pos.x_tile, robot_pos.y_tile + 1, 1); // Check tile value. Open tile
 		}
@@ -309,15 +311,16 @@ void Set_tile_from_ir()
 		{
 			Set_tile(robot_pos.x_tile + 1, robot_pos.y_tile, 255); // Check tile value. Wall tile
 		}
-		else
+		else /*if(map_array[robot_pos.y_tile][robot_pos.x_tile + 1] != 2)*/
 		{
 			Set_tile(robot_pos.x_tile + 1, robot_pos.y_tile, 1); // Check tile value. Open tile
 		}
+		
 		if(right_side_detected)
 		{
 			Set_tile(robot_pos.x_tile - 1, robot_pos.y_tile, 255); // Check tile value. Wall tile
 		}
-		else
+		else /*if(map_array[robot_pos.y_tile][robot_pos.x_tile - 1] != 2)*/
 		{
 			Set_tile(robot_pos.x_tile - 1, robot_pos.y_tile, 1); // Check tile value. Open tile
 		}
@@ -338,15 +341,16 @@ void Set_tile_from_ir()
 		{
 			Set_tile(robot_pos.x_tile, robot_pos.y_tile + 1, 255); // Check tile value. Wall tile
 		}
-		else
+		else /*if(map_array[robot_pos.y_tile + 1][robot_pos.x_tile] != 2)*/
 		{
 			Set_tile(robot_pos.x_tile, robot_pos.y_tile + 1, 1); // Check tile value. Open tile
 		}
+		
 		if(right_side_detected)
 		{
 			Set_tile(robot_pos.x_tile, robot_pos.y_tile - 1, 255); // Check tile value. Wall tile
 		}
-		else
+		else /*if(map_array[robot_pos.y_tile - 1][robot_pos.y_tile] != 2)*/
 		{
 			Set_tile(robot_pos.x_tile, robot_pos.y_tile - 1, 1); // Check tile value. Open tile
 		}
@@ -391,11 +395,6 @@ void Set_peepz_in_da_needz()
 	Set_tile(peep_x,peep_y,2);
 }
 
-
-//heloooooooooooooooooooooooooooooo
-
-//int i;
-//int theta;
 
 /*
  //------------------------------------Testcase 1 (13,14) - funkar   -----------------------------------------

@@ -101,7 +101,7 @@ void robot_keep_right()
 	{
 		if ((front_side_detected || map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2) && left_side_detected && right_side_detected)
 		{   
-			Calibrate_robot_position();
+			//Calibrate_robot_position();
 			Movement_Queue_Put('l');
 			Movement_Queue_Put(180);
 			Movement_Queue_Put('f');
@@ -109,7 +109,7 @@ void robot_keep_right()
 		}
 		else if ((front_side_detected || map_array[next_y_position(Get_robot_direction())][next_x_position(Get_robot_direction())] == 2) && right_side_detected)
 		{
-			Calibrate_robot_position();
+			//Calibrate_robot_position();
 			Movement_Queue_Put('l');
 			Movement_Queue_Put(90);
 			Movement_Queue_Put('f');
@@ -275,12 +275,8 @@ void drive_nearest_path() //follows given path from gurras_array
 		}
 		steps++;
 	}
-	if(map_array[robot_pos.y_tile][robot_pos.x_tile] == 2)
-	{
-		Movement_Queue_Put('o');
-		nearest_path_driven = true;
-	}
-	else if(steps > 0)
+
+	if(steps > 0)
 	{
 		Movement_Queue_Put('f');
 		Movement_Queue_Put(steps);
@@ -295,6 +291,19 @@ void drive_nearest_path() //follows given path from gurras_array
 		Movement_Queue_Put('l');
 		Movement_Queue_Put(90);
 	}
+	else
+	{
+		PORTA = 0xFF;
+		Movement_Queue_Put('o');
+		nearest_path_driven = true;
+	}
+	
+// 	if(map_array[robot_pos.y_tile][robot_pos.x_tile] == 2)
+// 	{
+// 		PORTA = 0xFF;
+// 		Movement_Queue_Put('o');
+// 		nearest_path_driven = true;
+// 	}
 }
 
 
@@ -308,6 +317,11 @@ void drive_back_nearest_path() //drives the same way back, drives_nearest_path n
 	}
 	while(detect_path(y_positions_forward(Get_robot_direction(), steps + 1), x_positions_forward(Get_robot_direction(), steps + 1), 1))
 	{
+		if(detect_path(y_positions_forward(Get_robot_direction(), steps), x_positions_forward(Get_robot_direction(), steps), 3))
+		{
+			set_coordinate_in_NP_array(y_positions_forward(Get_robot_direction(), steps), x_positions_forward(Get_robot_direction(), steps), 0);
+		}
+		
 		if(steps > 15)
 		{
 			nearest_path_driven_back = true;
