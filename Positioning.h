@@ -2,7 +2,8 @@
  * Positioning.h
  *
  * Created: 5/17/2017 8:37:06 AM
- *  Author: guswe541
+ *  Author: Gustaf Westerholm guswe541 
+ 	          Hugo Willfors Bolin hugwi426
  */ 
 
 #ifndef POSITIONING_H_
