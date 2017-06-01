@@ -2,7 +2,8 @@
  * Positioning.c
  *
  * Created: 5/17/2017 8:31:50 AM
- *  Author: guswe541
+ *  Author: Gustaf Westerholm guswe541 
+ 	    Hugo Willfors Bolin hugwi426
  */ 
 
 
