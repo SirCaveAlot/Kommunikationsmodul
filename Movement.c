@@ -3,6 +3,9 @@
  *
  * Created: 4/20/2017 2:08:41 PM
  *  Author: jakpa844
+ * Code written by Jakob Palm 
+ *
+ * This file contains the movement queue for movement decisions, which are sent to the control module.
  */ 
 
 #include <avr/io.h>
@@ -16,24 +19,13 @@ volatile uint8_t Movement_Queue[MOVEMENT_QUEUE_SIZE];
 volatile int Movement_Queue_In, Movement_Queue_Out;
 volatile int Movement_queue_length = 0;
 
-
-/* Very simple queue
- * These are FIFO queues which discard the new data when full.
- *
- * Queue is empty when in == out.
- * If in != out, then 
- *  - items are placed into in before incrementing in
- *  - items are removed from out before incrementing out
- *
- * The queue will hold QUEUE_ELEMENTS number of items before the
- * calls to QueuePut fail.
- */
-
+// Initializes the queue.
 void Movement_Queue_Init(void)
 {
     Movement_Queue_In = Movement_Queue_Out = Movement_queue_length = 0;
 }
 
+// Inserts a uint8_t into the queue
 void Movement_Queue_Put(uint8_t new)
 {
     Movement_Queue[Movement_Queue_In] = new;
@@ -43,16 +35,19 @@ void Movement_Queue_Put(uint8_t new)
     Movement_Queue_In = (Movement_Queue_In + 1) % MOVEMENT_QUEUE_SIZE;
 }
 
+// Checks if queue is full
 bool Movement_queue_full()
 {
 	return Movement_queue_length == MOVEMENT_QUEUE_ELEMENTS;
 }
 
+// Checks if queue is empty
 bool Movement_queue_empty()
 {
 	return Movement_queue_length == 0;
 }
 
+// Pulls the first uint8_t from the queue
 void Movement_Queue_Get(uint8_t *old)
 {
     *old = Movement_Queue[Movement_Queue_Out];
