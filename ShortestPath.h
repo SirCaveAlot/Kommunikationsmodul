@@ -1,8 +1,8 @@
 /*
  * ShortestPath.h
  *
- * Created: 2017-05-08 15:47:00
- *  Author: Deep
+ * Created: 2017-05-08
+ * Author: Gustav Strandberg, gusst967
  */ 
 
 

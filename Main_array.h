@@ -1,8 +1,8 @@
 /*
  * Main_array.h
  *
- * Created: 2017-05-09 11:30:29
- *  Author: Deep
+ * Created: 2017-05-09
+ * Author: Gustav Strandberg, gusst967
  */ 
 
 

@@ -1,8 +1,8 @@
 /*
  * Adjacent_array.h
  *
- * Created: 2017-05-09 11:36:49
- *  Author: Deep
+ * Created: 2017-05-09
+ * Author: Gustav Strandberg, gusst967
  */ 
 
 

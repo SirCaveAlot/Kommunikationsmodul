@@ -1,8 +1,8 @@
 /*
  * Adjacent_array.c
  *
- * Created: 2017-05-09 11:36:36
- *  Author: Deep
+ * Created: 2017-05-09
+ * Author: Gustav Strandberg, gusst967
  */ 
 
 #include <avr/io.h>
@@ -13,29 +13,34 @@
 #include "Main_array.h"
 #include "ShortestPath.h"
 
-
+//-----------------------Adjacent array for shortest path----------------------
 #define NUMBER_OF_ADJACENTS 4
 
 uint8_t adjacent_nodes_array[NUMBER_OF_ADJACENTS][3];
 
-void Load_row_in_adjacent_array(uint8_t y_position, uint8_t x_position, uint8_t adjacent_counter, uint8_t iteration_counter)
+//--------------------------------Functions------------------------------------
+void Load_row_in_adjacent_array(uint8_t y_position, uint8_t x_position,
+		uint8_t adjacent_counter, uint8_t iteration_counter)
 {
 	adjacent_nodes_array[adjacent_counter][0] = y_position;
 	adjacent_nodes_array[adjacent_counter][1] = x_position;
 	adjacent_nodes_array[adjacent_counter][2] = iteration_counter;
 }
 
-void Load_adjacent_nodes(uint8_t y_position, uint8_t x_position) // Puts the correct adjacent nodes in adjacent_nodes_array
+// Puts the correct adjacent nodes in adjacent_nodes_array
+void Load_adjacent_nodes(uint8_t y_position, uint8_t x_position) 
 {
 	uint8_t adjacent_node_counter = 0;
 	uint8_t iteration_counter = main_node_array[node_counter][2] + 1;
-
+	
+	// Load if the adjacent node below isn't a wall.
 	if(!Check_node_if_wall(y_position + 1, x_position))
 	{
 		Load_row_in_adjacent_array(y_position + 1, x_position, adjacent_node_counter, iteration_counter); // Load lower position if not wall
 		adjacent_node_counter++;
 	}
 	
+	// Load if the adjacent node above isn't a wall.
 	if(x_position != 0)
 	{
 		if(!Check_node_if_wall(y_position - 1, x_position))
@@ -45,12 +50,14 @@ void Load_adjacent_nodes(uint8_t y_position, uint8_t x_position) // Puts the cor
 		}
 	}
 	
+	// Load if the adjacent node to the right isn't a wall.
 	if(!Check_node_if_wall(y_position, x_position + 1))
 	{
 		Load_row_in_adjacent_array(y_position, x_position + 1, adjacent_node_counter, iteration_counter); // Load right position if not wall
 		adjacent_node_counter++;
 	}
 	
+	// Load if the adjacent node to the left isn't a wall.
 	if(y_position != 0)
 	{
 		if(!Check_node_if_wall(y_position, x_position - 1))
