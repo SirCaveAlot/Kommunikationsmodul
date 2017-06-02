@@ -3,13 +3,10 @@
  *
  * Created: 3/29/2017 3:04:47 PM
  *  Author: jakpa844
- */ 
-
-/*
- * Kommunikationsmodul.c
+ * Code written by Jakob Palm
  *
- * Created: 3/26/2017 11:35:04 AM
- *  Author: jakpa844
+ * This file contains the queue for all UART data received by the FireFly modem connected to the PC,
+ * aswell as all functions to receive and send data through UART.
  */ 
 
 #include <avr/io.h>
@@ -21,10 +18,6 @@
 
 #include "UART.h"
 
-#define clkspd 14745600
-#define BAUD 115200
-#define UBBR clkspd/16/BAUD-1
-
 /* Queue structure */
 #define UART_QUEUE_ELEMENTS 20
 #define UART_QUEUE_SIZE (UART_QUEUE_ELEMENTS + 1)
@@ -32,6 +25,7 @@ volatile uint8_t UART_Queue[UART_QUEUE_SIZE];
 uint8_t volatile UART_Queue_In, UART_Queue_Out;
 volatile int UART_queue_length = 0;
 
+// Initializes the UART busses, both to the FireFly and to the control unit
 void USART_Init( )
 {
 	/* Set baud rate */
@@ -48,6 +42,7 @@ void USART_Init( )
 	UCSR1C = 0b00000110;
 }
 
+// Transmits uartdata to either the control unit (port = 0) or the firefly (port = 1)
 void USART_Transmit(uint8_t uartdata, int port)
 {
 	if(port == 0)
@@ -66,6 +61,7 @@ void USART_Transmit(uint8_t uartdata, int port)
 	}
 }
 
+// Initializes the interrupt registers
 void Interrupt_Init()
 {
 	UCSR0B |= (1<<RXCIE0);
@@ -73,23 +69,13 @@ void Interrupt_Init()
 	//sei();
 }
 
-/* Very simple queue
- * These are FIFO queues which discard the new data when full.
- *
- * Queue is empty when in == out.
- * If in != out, then 
- *  - items are placed into in before incrementing in
- *  - items are removed from out before incrementing out
- *
- * The queue will hold QUEUE_ELEMENTS number of items before the
- * calls to QueuePut fail.
- */
-
+// Initializes the UART queue
 void UART_Queue_Init(void)
 {
     UART_Queue_In = UART_Queue_Out = 0;
 }
 
+// Inserts an uint8_t in the UART queue
 void UART_Queue_Put(uint8_t new)
 {
     UART_Queue[UART_Queue_In] = new;
@@ -99,6 +85,7 @@ void UART_Queue_Put(uint8_t new)
     UART_Queue_In = (UART_Queue_In + 1) % UART_QUEUE_SIZE;
 }
 
+// Pulls the first uint8_t from the UART queue
 void UART_Queue_Get(uint8_t *old)
 {
     *old = UART_Queue[UART_Queue_Out];
@@ -108,11 +95,13 @@ void UART_Queue_Get(uint8_t *old)
 	UART_Queue_Out = (UART_Queue_Out + 1) % UART_QUEUE_SIZE;
 }
 
+// Checks if the UART queue is full
 bool UART_queue_full()
 {
 	return UART_queue_length == UART_QUEUE_ELEMENTS;
 }
 
+// Checks if the UART queue is empty
 bool UART_queue_empty()
 {
 	return UART_queue_length == 0;
