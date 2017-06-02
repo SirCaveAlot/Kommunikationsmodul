@@ -2,7 +2,10 @@
  * SPI.c
  *
  * Created: 4/3/2017 2:10:56 PM
- *  Author: gusst967
+ *  Author: jakpa844
+ * Code written by Jakob Palm
+ *
+ * This file contains the queue for SPI data.
  */ 
 
 // 
@@ -37,7 +40,7 @@ uint8_t SPI_queue_length;
 bool dequeue = false;
 bool dequeue_L = false;
 
-
+// Initializes SPI.
 void Spi_init()
 {
 	DDRB = (1<<DDB6);               //MISO as OUTPUT
@@ -45,21 +48,7 @@ void Spi_init()
 	SPCR = (1<<SPIE)|(1<<SPE);       //Enable SPI && interrupt enable bit
 }
 
-
-/* Very simple queue
- * These are FIFO queues which discard the new data when full.
- *
- * Queue is empty when in == out.
- * If in != out, then 
- *  - items are placed into in before incrementing in
- *  - items are removed from out before incrementing out
- * Queue is full when in == (out-1 + QUEUE_SIZE) % QUEUE_SIZE;
- *
- * The queue will hold QUEUE_ELEMENTS number of items before the
- * calls to QueuePut fail.
- */
-
-
+// Initializes the SPI queue
 void SPI_queue_init()
 {
 	SPI_queue_in = SPI_queue_out = 0;
@@ -67,6 +56,7 @@ void SPI_queue_init()
 	dequeue = false;
 }
 
+// Inserts a uint8_t into the SPI queue
 void SPI_queue_put(uint8_t new)
 {
 	if(SPI_queue_length == SPI_QUEUE_ELEMENTS)
@@ -79,6 +69,7 @@ void SPI_queue_put(uint8_t new)
 	SPI_queue_length++;
 }
 
+// Pulls the first uint8_t from the SPI queue
 void SPI_queue_get(uint8_t *old)
 {
 	if(SPI_queue_length == 0)
@@ -91,11 +82,13 @@ void SPI_queue_get(uint8_t *old)
 	SPI_queue_length--;
 }
 
+// Looks at the first element in the SPI queue
 uint8_t SPI_queue_peek(uint8_t queue_index)
 {
 	return SPI_queue[queue_index];
 }
 
+// Removes the first element in the SPI queue
 void SPI_queue_remove()
 {
 	if(SPI_queue_length == 0)
@@ -106,35 +99,20 @@ void SPI_queue_remove()
 	SPI_queue_length--;
 }
 
-// uint8_t SPI_queue_length()
-// {
-// 	if(SPI_queue_in == ((SPI_queue_out + SPI_QUEUE_ELEMENTS) % SPI_QUEUE_SIZE))
-// 	{
-// 		return SPI_QUEUE_ELEMENTS;
-// 	}
-// 	else if(SPI_queue_in == SPI_queue_out)
-// 	{
-// 		return 0;
-// 	}
-// 	else if(SPI_queue_out > SPI_queue_in)
-// 	{
-// 		return SPI_QUEUE_SIZE - (SPI_queue_out - SPI_queue_in);
-// 	}
-// 	else
-// 	{
-// 		return SPI_queue_in - SPI_queue_out;
-// 	}
-// }
-
+// Dequeues the SPI when in Drive mode
 void Dequeue_SPI_queue_D_mode()
 {		
+	// Checks if all data has been received
 	if(SPI_queue_length < 13)
 	{
 		dequeue = false;
 		return;
 	}
 	
+	// Check if data has arrived in correct order
 	Start_dequeuing_D_mode();
+	
+	// Dequeues the SPI queue
 	if(dequeue)
 	{
 		uint8_t last_byte = 0;
@@ -175,7 +153,7 @@ void Dequeue_SPI_queue_D_mode()
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
 			
-			// Wheel
+			// Wheels
 			SPI_queue_get(&distance_traveled);
 			distance_traveled = Wheelshifts_to_distance(distance_traveled);
 			distance_traveled = (distance_traveled + Wheelshifts_to_distance(SPI_queue_peek(SPI_queue_out))) / 2;
@@ -190,7 +168,7 @@ void Dequeue_SPI_queue_D_mode()
 	
 			}
 			
-			// Robot position			
+			// Robot position in mm			
 			USART_Transmit((uint8_t)(robot_pos.x >> 8), 1);
 			USART_Transmit((uint8_t)(robot_pos.x), 1);
 			USART_Transmit((uint8_t)(robot_pos.y >> 8), 1);
@@ -198,20 +176,25 @@ void Dequeue_SPI_queue_D_mode()
 			
 			distance_traveled = 0;
 			
+			// Gyro
+			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
+			SPI_queue_remove();
+			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
+			SPI_queue_remove();
+			
 			// LIDAR distance
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
 			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 			SPI_queue_remove();
 			
-			// LIDAR angle
-			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
-			SPI_queue_remove();
-			USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
-			SPI_queue_remove();
-			
+			// Last movement
 			USART_Transmit(last_movement, 1);
+			
+			// Robot direction
 			USART_Transmit(Get_robot_direction(), 1);
+			
+			// Robot position in the map_array coordinates. 
 			USART_Transmit(robot_pos.x_tile, 1);
 			USART_Transmit(robot_pos.y_tile, 1);
 			if(mode_changed)
@@ -219,6 +202,7 @@ void Dequeue_SPI_queue_D_mode()
 				mode = 'L';
 				mode_changed = false;
 			}
+			// Mode
 			USART_Transmit(mode, 1);
 			
 			
@@ -232,6 +216,7 @@ void Dequeue_SPI_queue_D_mode()
 
 }
 
+// Checks if data has arrived in correct order
 void Start_dequeuing_D_mode()
 {
 	uint8_t first_value = SPI_queue_peek(SPI_queue_out);
@@ -257,32 +242,39 @@ void Start_dequeuing_D_mode()
 	}
 }
 
+// Dequeues the SPI queue when in Laser mode
 void Dequeue_SPI_queue_L_mode()
 {
+	// Check if an entire reading has been transmitted yet (0xFFFF, distance, angle)
 	if(SPI_queue_length < 6)
 	{
 		dequeue_L = false;
 		return;
 	}
+	// Check if data has arrived in the correct order
 	Start_dequeuing_L_mode();
 	
+	// Dequeues the SPI queue
 	if(dequeue_L)
 	{
+		// 0xFFFF
 		USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 		SPI_queue_remove();
 		USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 		SPI_queue_remove();
 		
-		distance_array[distance_counter] = SPI_queue_peek(SPI_queue_out);
-		USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
-		distance_counter++;
-		SPI_queue_remove();
-		
+		// Laser distance
 		distance_array[distance_counter] = SPI_queue_peek(SPI_queue_out);
 		USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 		distance_counter++;
 		SPI_queue_remove();
 
+		distance_array[distance_counter] = SPI_queue_peek(SPI_queue_out);
+		USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
+		distance_counter++;
+		SPI_queue_remove();
+		
+		// Laser angle
 		angle_array[angle_counter] = SPI_queue_peek(SPI_queue_out);
 		USART_Transmit(SPI_queue_peek(SPI_queue_out), 1);
 		angle_counter++;
@@ -293,6 +285,7 @@ void Dequeue_SPI_queue_L_mode()
 		angle_counter++;
 		SPI_queue_remove();
 		
+		// Check if received 2000 readings (uint16_t, so 4000 uint8_t)
 		if(angle_counter == 4000)
 		{
 			mode = 'S';
@@ -314,6 +307,7 @@ void Dequeue_SPI_queue_L_mode()
 	}
 }
 
+// Checks if data arrived in correct order
 void Start_dequeuing_L_mode()
 {
 	uint8_t first_value = SPI_queue_peek(SPI_queue_out);
